@@ -193,9 +193,11 @@ URL:https://docs.microsoft.com/ja-jp/azure/active-directory/devices/hybrid-azure
 ![](./how-to-create-hybridazureadjoin-federated/038.jpg)
 
 オンプレミスのコンピューター アカウントの objectSID を発行する
+
 URL:https://docs.microsoft.com/ja-jp/azure/active-directory/devices/hybrid-azuread-join-manual#issue-objectsid-of-the-computer-account-on-premises
 
 ③クレーム名：Pass through primary SID
+
 ![](./how-to-create-hybridazureadjoin-federated/039.jpg)
 
 ## Hybrid Azure AD Join 構成までの流れ
