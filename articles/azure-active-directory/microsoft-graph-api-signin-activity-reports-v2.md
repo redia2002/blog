@@ -69,11 +69,11 @@ GitHub 上の以下のスクリプトをダウンロードし、 C:\SignInReport
 ### D. 編集箇所について
 上記サンプル スクリプトはサインイン アクティビティ レポートを出力するスクリプトですが、 URL (クエリ パラメーター) を編集することで様々なログの取得が可能です。
 
-例 : 特定のリスクが検出されたサインイン イベントのみ抽出したい
+**例 : 特定のリスクが検出されたサインイン イベントのみ抽出したい**
 
 (riskState eq 'atRisk' or riskState eq 'confirmedCompromised') というフィルターを追加します。
 
-例 : 特定期間のサインイン イベントのみ抽出したい
+**例 : 特定期間のサインイン イベントのみ抽出したい**
 
 (createdDateTime le $currentdate and createdDateTime ge $prevdate) といった具体に日時を指定してフィルターを追加します。
 
@@ -87,24 +87,26 @@ GitHub 上の以下のスクリプトをダウンロードし、 C:\SignInReport
 > ((Get-Date).ToUniversalTime()).AddDays(-1).ToString("yyyy'-'MM'-'dd HH':'mm':'ss'Z'").Replace(' ', 'T')
 
 
-例 : 特定の OS からのアクセスを抽出したい
-> (startswith(deviceDetail/operatingSystem, 'Ios') というフィルターを追加します。
+**例 : 特定の OS からのアクセスを抽出したい**
+
+(startswith(deviceDetail/operatingSystem, 'Ios') というフィルターを追加します。
 
 クエリ パラメーターについては以下の公開情報を参照ください。
 
 [クエリ パラメーターを使用して応答をカスタマイズする](https://docs.microsoft.com/ja-jp/graph/query-parameters)
+
 
 ### E. その他、 Graph API を実行する際の便利なツールなど
 Graph API を利用するツールは他にも様々用意がございます。
 ここではツールや、 Graph API を利用するにあたって必要な権限を調べる場合など
 
 
-# Graph Explorer
+#### Graph Explorer
 視覚的に分かりやすく、必要な権限付与も行いやすいため URL が正しいか等を確認するのに最適です。
 
 [Graph Explorer](https://developer.microsoft.com/ja-jp/graph/graph-explorer)
 
-# Az コマンド
+#### Az コマンド
 事前に Az コマンドをインストールする必要はありますが、今回のようにスクリプトを用意せずに実行することが可能です。
 CLI ベースで確認されたい場合にはこちらをご利用ください。
 Az rest コマンドを使用することで、任意の HTTP リクエストを作成し、取得することが可能です。
@@ -115,7 +117,7 @@ Az rest コマンドを使用することで、任意の HTTP リクエストを
 [az コマンドについての公開情報](https://docs.microsoft.com/ja-jp/cli/azure/reference-index?view=azure-cli-latest#az-rest)
 
 
-# Graph API 公開情報
+#### Graph API 公開情報
 Graph API を実行する際には事前に権限付与が必要な場合があります。
 例えば今回のサインイン ログの場合は以下の公開情報に記載のある通り、監査ログに対する読み取り権限が必要です。
 
@@ -127,7 +129,7 @@ Graph API を実行する際には事前に権限付与が必要な場合があ�
 そのため事前準備でこれらの権限をアプリケーションに対して付与しました。
 
 
-
+***
 いかがでしたでしょうか。
 お客様の要件に合わせて適宜フィルター条件を追加したり、整形しやすく出力することが可能です。
 
