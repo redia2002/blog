@@ -41,10 +41,9 @@ https://docs.microsoft.com/ja-jp/azure/active-directory/active-directory-reporti
 3. [Microsoft Graph] を選択します。
 4. [アプリケーションの許可] を選択し、 AuditLog.Read.All を選択します。選択後は画面下の「アクセス許可の追加」を選択します。
 
-![](./aad-get-signinlog\appview.jpg)
+![](.\aad-get-signinlog\appview.jpg)
 
-
-6. アクセス許可の追加後、「XX に管理者の同意を与えます」を選択し、権限を付与します。
+5. アクセス許可の追加後、「XX に管理者の同意を与えます」を選択し、権限を付与します。
 
 
 ### B. 処理に必要なライブラリを nuget で取得するスクリプトの準備と実行
