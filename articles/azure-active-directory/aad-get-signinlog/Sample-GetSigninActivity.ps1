@@ -1,38 +1,41 @@
-﻿########################################################
+########################################################
 #
 #Azure AD サインイン ログ取得スクリプト
 #
-#Lastupdate:2019/12/17
-#詳細手順はXXXXXXXXXXXXXXXXXXXXXXXXXXを参照ください。
+#Lastupdate:2020/1/6
+#詳細手順は https://github.com/jpazureid/blog/blob/microsoft-graph-api-signin-activity-reports-v2/articles/azure-active-directory/microsoft-graph-api-signin-activity-reports-v2.md を参照ください。
 ########################################################
-
-Add-Type -Path ".\Tools\Microsoft.IdentityModel.Clients.ActiveDirectory\Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
 
 ## 環境に合わせ編集ください ##
 $outfile = ".\outfile.csv" # ファイルエクスポート先パスです。任意の値を入力ください。
-$ClientID     = "<ClientID>" # アプリケーションのクライアント ID です。
-$ClientSecret =  "<ClientSecret>" # アプリケーションのクライアント シークレットです。
-$tenantId = "<TenantId>" # ディレクトリ ID です。 Azure Active Directory のプロパティ - ディレクトリ ID より確認可能です。
+$daysago = "{0:s}" -f (get-date).AddDays(-7) + "Z"  # 例えば過去 30 日のデータを取得したい場合には $daysago = "{0:s}" -f (get-date).AddDays(-30) + "Z" とします。
 ## ここまで ##
 
-$resource = "https://graph.microsoft.com" 
-$daysago = "{0:s}" -f (get-date).AddDays(-7) + "Z"  # 例えば過去 30 日のデータを取得したい場合には $daysago = "{0:s}" -f (get-date).AddDays(-30) + "Z" とします。
+# リソース・アクセス先 URL 設定
+$resource = "https://graph.microsoft.com"
+$authuri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=" + $resource
+
+## 以下はユーザー割り当てマネージド ID 利用時　##
+#16 行目「$authuri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=" + $resource」をコメントアウトし、以下の 20/21 行目のコメントアウトを削除ください。
+#$usermanagedid = "<ユーザー割り当てマネージド ID のオブジェクト ID>"
+#$authuri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=" + $resource　+ "`&client_id=" + $usermanagedid
+###ここまで##
+
+## トークン取得
+$authContext = (Invoke-WebRequest -Uri $authuri -Method GET -Headers @{Metadata="true"})
+$content = $authContext.Content | ConvertFrom-Json
+$Token = $content.access_token
 
 $data = @()
-$authUrl = "https://login.microsoftonline.com/$tenantId/" 
-$authContext = New-Object Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext -ArgumentList $authUrl
-$Credential = New-Object -TypeName "Microsoft.IdentityModel.Clients.ActiveDirectory.ClientCredential" ($clientID, $clientSecret)
-$authResult = $AuthContext.AcquireTokenAsync($resource, $Credential)
-$headerParams = @{'Authorization' = "$($authResult.Result.AccessTokenType) $($authResult.Result.AccessToken)"}
 
 ## アクセス先 URL 、必要に応じてフィルター条件を追記します。
 ## フィルター例 "$resource/beta/auditLogs/signIns?api-version=beta&`$filter=((createdDateTime gt $daysago) and (startswith(deviceDetail/operatingSystem, 'Ios') or startswith(deviceDetail/operatingSystem, 'Android')))"
-$uri = "$resource/beta/auditLogs/signIns?api-version=beta&`$filter=(createdDateTime gt $daysago)"
+$url = "$resource/beta/auditLogs/signIns?api-version=beta&`$filter=(createdDateTime gt $daysago)"
 
 
-if ($null -ne $authResult.Result.AccessTokenType) {
+if ($null -ne $Token) {
     Do {
-        $myReport = Invoke-WebRequest -UseBasicParsing -Headers $headerParams -Uri $uri
+        $myReport = Invoke-WebRequest -UseBasicParsing -Headers @{ Authorization ="Bearer $Token"} -Uri $url
         $myReportValue = ($myReport.Content | ConvertFrom-Json).value
         $myReportVaultCount = $myReportValue.Count
         for ($j = 0; $j -lt $myReportVaultCount; $j++) {
