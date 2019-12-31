@@ -26,6 +26,8 @@ https://docs.microsoft.com/ja-jp/azure/active-directory/managed-identities-azure
 
 なお、今回ご紹介しているサインイン ログを取得するスクリプトは Azure AD Premium P1 ライセンス以上のライセンスがテナントに対して 1 つ以上必要です。
 
+## マネージド ID を使用したレポート取得方法
+
 ### A. 事前準備 - マネージド ID を有効化します
 
 Azure Virtual Machine を 1 台デプロイします。デプロイ後、スクリプトを実行する Azure Virtual Machine のマネージド ID を有効化します。以下の手順に従って、マネージド ID を有効化します。
@@ -103,18 +105,18 @@ GitHub 上の以下のスクリプトをダウンロードし、マネージド 
 クエリ パラメーターを使用して応答をカスタマイズする  
 https://docs.microsoft.com/ja-jp/graph/query-parameters
 
-### E. その他、 Graph API を実行する際の便利なツールなど
+## その他、 Graph API を実行する際の便利なツールなど
 
 Graph API を利用するツールは他にも様々用意がございます。
 
-# Graph Explorer
+### Graph Explorer
 
 視覚的に分かりやすく、必要な権限付与も行いやすいため URL が正しいか等を確認するのに最適です。
 
 Graph Explorer  
 https://developer.microsoft.com/ja-jp/graph/graph-explorer
 
-# Az コマンド
+### Az コマンド
 
 事前に Az コマンドをインストールする必要はありますが、今回のようにスクリプトを用意せずに実行することが可能です。CLI ベースで確認されたい場合にはこちらをご利用ください。az rest コマンドを使用することで、任意の HTTP リクエストを作成し、取得することが可能です。
 
@@ -124,7 +126,7 @@ https://docs.microsoft.com/ja-jp/cli/azure/install-azure-cli?view=azure-cli-late
 az コマンドについての公開情報  
 https://docs.microsoft.com/ja-jp/cli/azure/reference-index?view=azure-cli-latest#az-rest
 
-# Graph API 公開情報
+## Graph API の公開情報
 
 Graph API を実行する際には事前に権限付与が必要な場合があります。例えば今回のサインイン ログの場合は以下の公開情報に記載のある通り、監査ログに対する読み取り権限が必要です。実行する Graph API ごとに要求される権限が異なるため、公開情報から実行する Graph API に必要な権限を確認し、実行するアプリケーション、もしくはユーザーに権限付与を行ってください。
 
