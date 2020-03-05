@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  
+  <title>ハードマッチによる同期ユーザーの切り替え方法 (AD フォレスト移行 編) | Japan Azure Identity Support Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="皆さん、こんにちは。日本マイクロソフト Azure Identity サポートの金子です。   今回は、オンプレミス AD フォレストの移行を検討されている方々に向けて、既存の AD フォレストと同期している Azure AD ユーザーを新しい AD フォレストに紐付け替える方法についてご紹介したいと思います。 図にすると、このようなイメージです。       既存の AD フォレスト conto">
+<meta name="keywords" content="AAD Connect">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ハードマッチによる同期ユーザーの切り替え方法 (AD フォレスト移行 編)">
+<meta property="og:url" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/index.html">
+<meta property="og:site_name" content="Japan Azure Identity Support Blog">
+<meta property="og:description" content="皆さん、こんにちは。日本マイクロソフト Azure Identity サポートの金子です。   今回は、オンプレミス AD フォレストの移行を検討されている方々に向けて、既存の AD フォレストと同期している Azure AD ユーザーを新しい AD フォレストに紐付け替える方法についてご紹介したいと思います。 図にすると、このようなイメージです。       既存の AD フォレスト conto">
+<meta property="og:locale" content="ja">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch001.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch002.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch003.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch004.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch005.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch006.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch007.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch008.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch009.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch010.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch011.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch012.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch013.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch014.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch015.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch016.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch017.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch018.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch019.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch020.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch021.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch022.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch023.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch024.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch025.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch026.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch027.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch028.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch029.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch030.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch031.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch032.jpg">
+<meta property="og:updated_time" content="2020-03-05T03:14:38.173Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ハードマッチによる同期ユーザーの切り替え方法 (AD フォレスト移行 編)">
+<meta name="twitter:description" content="皆さん、こんにちは。日本マイクロソフト Azure Identity サポートの金子です。   今回は、オンプレミス AD フォレストの移行を検討されている方々に向けて、既存の AD フォレストと同期している Azure AD ユーザーを新しい AD フォレストに紐付け替える方法についてご紹介したいと思います。 図にすると、このようなイメージです。       既存の AD フォレスト conto">
+<meta name="twitter:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch001.jpg">
+  
+    <link rel="alternate" href="../../blog/atom.xml" title="Japan Azure Identity Support Blog" type="application/atom+xml">
+  
+
+  <link rel="icon" href="./favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
+  <link rel="manifest" href="./site.webmanifest">
+  <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="theme-color" content="#ffffff">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="site-header-logo"></div>
+  <div id="site-header-blog-wrapper"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="../../index.html">Home</a>
+        
+          <a class="main-nav-link" href="../../archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="../../blog/atom.xml" title="RSSフィード"></a>
+        
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//www.bing.com/search" method="get" accept-charset="UTF-8" name="bing-search" onsubmit="var f=this;if(f['q'].value){var searchUrl =  'https://www.bing.com/search?q=' +  encodeURIComponent(f['q'].value + ' site:' + f['sitesearch'].value) ;window.open(searchUrl, 'blank') };return false;" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="検索"><button type="submit" id="nav-search-btn" class="search-form-submit"></button><input type="hidden" name="sitesearch" value="https://jpazureid.github.io/blog"></form>
+      </div>
+    </div>
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="../../index.html" id="logo">Japan Azure Identity Support Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="../../index.html" id="subtitle">日本マイクロソフトの Azure Active Directory と AD FS に関するサポート情報のブログです。</a>
+        </h2>
+      
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-azure-active-directory-connect/aadc_hardmatch" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+    
+      <header class="article-header-single">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      ハードマッチによる同期ユーザーの切り替え方法 (AD フォレスト移行 編)
+    </h1>
+  
+
+      </header>
+      <div class="article-share">
+        Last Update: 
+        <a href class="article-date-single">
+  <time datetime="2019-10-13T15:00:00.000Z" itemprop="datePublished">2019-10-14</time>
+</a>
+        
+        
+        <a href="https://github.com/jpazureid/blog/issues/new?title=&body=%0A%0A---%0A%0A%23%23%23%23+Document+Details%0A%0A%E2%9A%A0+*Do+not+edit+this+section.%0A%0A*+ID%3A+8b80e616-3530-5c26-911b-cbae1ac6f472%0A*+%E5%AF%BE%E8%B1%A1%E8%A8%98%E4%BA%8B%3A+%5B%E3%83%8F%E3%83%BC%E3%83%89%E3%83%9E%E3%83%83%E3%83%81%E3%81%AB%E3%82%88%E3%82%8B%E5%90%8C%E6%9C%9F%E3%83%A6%E3%83%BC%E3%82%B6%E3%83%BC%E3%81%AE%E5%88%87%E3%82%8A%E6%9B%BF%E3%81%88%E6%96%B9%E6%B3%95+%28AD+%E3%83%95%E3%82%A9%E3%83%AC%E3%82%B9%E3%83%88%E7%A7%BB%E8%A1%8C+%E7%B7%A8%29%5D%28https%3A%2F%2Fjpazureid.github.io%2Fblog%2Fazure-active-directory-connect%2Faadc_hardmatch%2F%29%0A*+Content+Source%3A+%5Barticles%2Fazure-active-directory-connect%2Faadc_hardmatch.md%5D%28https%3A%2F%2Fgithub.com%2Fjpazureid%2Fblog%2Fblob%2Fmaster%2Farticles%2Fazure-active-directory-connect%2Faadc_hardmatch.md%29%0A*+Author%3A+" class="article-github-issue-link" target="_blank" rel="noopener noreferrer">feedback</a>
+        
+        <a data-url="https://jpazureid.github.io/blog/azure-active-directory-connect/aadc_hardmatch/" data-id="ck7e6fl3q004z4ep6ca6e04pw" class="article-share-link">共有</a>
+      </div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>皆さん、こんにちは。日本マイクロソフト Azure Identity サポートの金子です。  </p>
+<p>今回は、オンプレミス AD フォレストの移行を検討されている方々に向けて、既存の AD フォレストと同期している Azure AD ユーザーを新しい AD フォレストに紐付け替える方法についてご紹介したいと思います。</p>
+<p>図にすると、このようなイメージです。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch001.jpg">  
+
+<p>既存の AD フォレスト contoso.local は既に Azure AD と同期しています。<br>この図では一つのドメインにしていますが、マルチフォレスト環境の場合、contoso.local や abc.local など複数の AD フォレストがオンプレミスに存在している場合があります。<br>そのようなマルチフォレスト環境で、会社間の合併などにより複数のドメインを contoso.com などの一つのドメインに統合する、といったような移行作業では、ここでご紹介する “ハードマッチ” と呼ばれる同期の方法をご利用いただくことをお勧めしています。  </p>
+<p>上図をご覧いただくと気づくかと思いますが、オンプレミス側のユーザーはフォレスト移行に伴い、別のフォレストの別のユーザーに切り替わります。しかし、Azure AD 側のユーザーは同一のユーザーのままです。</p>
+<p>したがって、Azure AD 側のユーザーを新規作成したり、Office 365 のライセンスの割り当て直すといった手間を省くことができるとともに、Azure AD Connect (AADC) の機能であるパスワード ハッシュ同期やパススルー認証、シームレス SSO など、ご利用中のオプション機能を継続してご利用いただくことが可能です。</p>
+<p>なお、今回は移行元/移行先が判別しやすいように別ドメイン名でユーザー名を変更して移行する前提でご案内しておりますが、サーバーのリプレイスなどで同期元 AD フォレスト/ユーザーとしては移行しますが、新規で同名のドメインを別に構築し、そちらを Azure AD の同期元とするような場合も同様の考え方になります。</p>
+<h2 id="事前準備"><a href="#事前準備" class="headerlink" title="事前準備"></a>事前準備</h2><p>まず最初に、現在の AADC の設定を確認します。<br>以下の手順で現在ソースアンカーを何の属性に設定しているか確認します。  </p>
+<h3 id="ソースアンカーの確認"><a href="#ソースアンカーの確認" class="headerlink" title="ソースアンカーの確認"></a>ソースアンカーの確認</h3><p>① AADC がインストールされたサーバーで、構成ウィザードを起動します。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch002.jpg">  
+
+<p>② [現在の構成を表示] を選択し、[次へ] をクリックします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch003.jpg">  
+
+<p>③ [ソースアンカー] に属性が表示されます。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch004.jpg">  
+
+
+<p>ソースアンカーが objectGUID に設定されている場合は、事前に mS-DS-ConsistencyGuid に変更しておく必要があります。  </p>
+<p><strong>・なぜ変更する必要があるの？</strong><br>objectGUID はオブジェクト (ここではユーザーのこと) ごとに一意の変更不可の値で、別のユーザー (上図でいうと移行先のフォレストの <a href="mailto:12345@contoso.com" target="_blank" rel="noopener">12345@contoso.com</a>) には同じ値を設定できません。<br>よって、ハードマッチで切り替えを行うことができません。(ハードマッチについては後述します。)<br>一方、mS-DS-ConsistencyGUID 属性値は変更が可能なので、移行元の旧同期ユーザー (上図で言うと <a href="mailto:12345@contoso.local" target="_blank" rel="noopener">12345@contoso.local</a>) で使用している値と同じ値を移行先の新同期ユーザー (上図で言うと移行先のフォレストの <a href="mailto:12345@contoso.com" target="_blank" rel="noopener">12345@contoso.com</a>) でも保持させることができるため、ハードマッチによる切り替えを行うことができます。  </p>
+<p><strong>・ソースアンカーを変更するリスクは？</strong><br>ソースアンカーを変更する場合のリスクを気にされる方も多いと思いますが、AADC は通常 objectGUID の値を Base64 でエンコードし、初回の同期処理で Azure AD の ImmutableID の値にセットします。<br>つまり、ソースアンカーを mS-DS-ConsistencyGuid に変更しても、ImmutableID の値は元の objectGUID をエンコードした値のまま変わりません。<br>したがって、同じ ImmutableID の値が mS-DS-ConsistencyGuid に書き戻されるため、既存の同期ユーザーが同期できなくなるといった影響は生じません。</p>
+<h3 id="ソースアンカーの変更"><a href="#ソースアンカーの変更" class="headerlink" title="ソースアンカーの変更"></a>ソースアンカーの変更</h3><p>では、以下の手順でソースアンカーを mS-DS-ConsistencyGuid に変更します。<br>既にソースアンカーを mS-DS-ConsistencyGuid または objectGUID 以外に設定されている方は、この項目はスキップして次に進んでください。  </p>
+<p>① 構成ウィザードを起動し、 [追加のタスク] で [ソースアンカーの構成] を選択し、[次へ] をクリックします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch005.jpg">  
+
+<p>② [Azure AD に接続] で、Azure AD のグローバル管理者のユーザー名とパスワードを入力し、[次へ] をクリックします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch006.jpg">  
+
+<p>③ そのまま [次へ] をクリックします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch007.jpg">  
+
+<p>④ [構成] をクリックします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch008.jpg">  
+
+<p>⑤ 既定でソースアンカーの属性が mS-DS-ConsistencyGuid  に設定されるので、[終了] をクリックします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch009.jpg">  
+
+<p>以上でソースアンカーの変更が完了しました。<br>構成ウィザード終了後、同期が実行され、オンプレミス AD の  mS-DS-ConsistencyGuid 属性と Azure AD の Immutable ID 属性がハードマッチします。  </p>
+<h2 id="同期元ユーザーの切り替え"><a href="#同期元ユーザーの切り替え" class="headerlink" title="同期元ユーザーの切り替え"></a>同期元ユーザーの切り替え</h2><p>次はいよいよ、同期元のフォレストを新フォレストに切り替えます。<br>前述のとおり、切り替え方法は AADC の同期機能であるハードマッチを利用します。  </p>
+<p>ハードマッチとは、オンプレミス AD ユーザーと Azure AD ユーザー間でソースアンカーの値を一致させることで、AADC が双方のオブジェクトを紐付けし、同期を行う処理のことをいいます。  </p>
+<p>図で表すと、以下のような紐付けが行われます。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch010.jpg">  
+
+<p>AADC の同期処理には、他にもソフトマッチと呼ばれる ProxyAddresses もしくは UserPrincipalName (UPN) の値を一致させて紐付ける方法がありますが、ハードマッチはソフトマッチよりも優先されます。  </p>
+<p>つまり、ハードマッチが一番優先度の高いオンプレミス AD と Azure AD 間のオブジェクトの紐付け方法になり、また既に同期済のユーザーの紐付けを変更する場合はソフトマッチによる紐付けは利用できません。<br>なぜならば、一度オンプレミス AD と同期した Azure AD 側のオブジェクトは ImmutableID というソースアンカーの属性値を持っているため、AADC が同期済みのオブジェクトと判断し、ソフトマッチによる同期をパスするためです。  </p>
+<p>それでは、具体的に切り替えの手順を説明していきましょう。  </p>
+<h3 id="Step-１：-AD-ユーザーを新フォレストにコピーする"><a href="#Step-１：-AD-ユーザーを新フォレストにコピーする" class="headerlink" title="Step １： AD ユーザーを新フォレストにコピーする"></a>Step １： AD ユーザーを新フォレストにコピーする</h3><p>Active Directory 移行ツール (ADMT) 等を使用して、新フォレスト (contoso.com) にユーザーをコピーします。<br>※この手順は一般的なオンプレミス AD における移行方法となりますので、本稿では割愛します。  </p>
+<h3 id="Step-２：-既存の-AD-フォレストの同期を解除"><a href="#Step-２：-既存の-AD-フォレストの同期を解除" class="headerlink" title="Step ２： 既存の AD フォレストの同期を解除"></a>Step ２： 既存の AD フォレストの同期を解除</h3><p>次に、既存の AD フォレスト contoso.com の AADC をステージング モードに降格します。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch011.jpg">  
+
+<p>①  構成ウィザードが起動し、[構成] をクリックします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch012.jpg">  
+
+<p>② [ステージング モードの構成] を選択し、[次へ] をクリックします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch013.jpg">  
+
+<p>③ [Azure AD に接続] で、Azure AD のグローバル管理者のユーザー名とパスワードを入力し、[次へ] をクリックします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch014.jpg">  
+
+<p>④ [ステージング モードを有効にする] にチェックを入れ、[次へ] をクリックします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch015.jpg">  
+
+<p>⑤ [構成] をクリックして、構成ウィザードを終了します。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch016.jpg">  
+
+<h3 id="Step-３：-ソースアンカーの値がコピーされていることを確認する"><a href="#Step-３：-ソースアンカーの値がコピーされていることを確認する" class="headerlink" title="Step ３： ソースアンカーの値がコピーされていることを確認する"></a>Step ３： ソースアンカーの値がコピーされていることを確認する</h3><p>既存の AD フォレストのユーザーの mS-DS-ConsistencyGuid の値が、新 AD フォレストのユーザーの mS-DS-ConsistencyGuid にコピーされていることを確認します。  </p>
+<p>もしコピーができていない場合は、以下の手順で値をコピーします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch017.jpg">  
+
+<p>① contoso.local の サーバー マネージャーで、[ツール] ＞ [Active Directory ユーザーとコンピューター] を開きます。  </p>
+<p>②  同期対象のユーザー (<a href="mailto:12345@contoso.local" target="_blank" rel="noopener">12345@contoso.local</a>) の[属性エディター] で、 mS-DS-ConsistencyGuid を選択し、[編集] をクリックします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch018.jpg">  
+
+<p>③ 値をコピーし、[OK] をクリックします。  </p>
+<p>④ メモ帳にコピーした値を貼り付けます。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch019.jpg">  
+
+<p>⑤  移行先フォレストの contoso.com の サーバー マネージャーで、[ツール] ＞ [Active Directory ユーザーとコンピューター] を開きます。  </p>
+<p>⑥ 同期対象のユーザー (<a href="mailto:12345@contoso.com" target="_blank" rel="noopener">12345@contoso.com</a>) の[属性エディター] で、 mS-DS-ConsistencyGuid を選択し、[編集] をクリックします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch020.jpg">  
+
+<p>⑦ 値を入れ、[OK] をクリックします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch021.jpg">  
+
+<p>⑧ [OK] を押して、プロパティ画面を閉じます。  </p>
+<p>すべての同期ユーザーが同様に値がコピーされていることを確認します。  </p>
+<h3 id="Step-４：-新-AD-フォレストを同期する"><a href="#Step-４：-新-AD-フォレストを同期する" class="headerlink" title="Step ４： 新 AD フォレストを同期する"></a>Step ４： 新 AD フォレストを同期する</h3><p>新 AD フォレストの AADC を構成して、ハードマッチによる同期元ユーザーの切り替えを行います。  </p>
+<p>① 新 AD フォレストの AADC サーバーで .msi ファイルを起動し、AADC をインストールします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch022.jpg">  
+
+<p>② 構成ウィザードが起動しますので、[ライセンス条項 および プライバシーに関する声明に同意します] にチェックを入れ、[続行] をクリックします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch023.jpg">  
+
+<p>③ [カスタマイズ] をクリックします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch024.jpg">  
+
+<p>④ 必要項目にチェックを入れて、[インストール] をクリックします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch025.jpg">  
+
+<p>⑤ 必要項目にチェックを入れて、[次へ] をクリックします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch026.jpg">  
+
+<p>⑥ [Azure AD に接続] で、Azure AD のグローバル管理者のユーザー名とパスワードを入力し、[次へ] をクリックします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch027.jpg">  
+
+<p>⑦ 新フォレストのドメインを設定し、[ディレクトリを追加] して、[次へ] をクリックします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch028.jpg">  
+
+<p>⑧ ユーザープリンシパル名を設定し、[次へ] をクリックします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch029.jpg">  
+
+<p>⑨ [ドメインと OU のフィルリング] を設定し、[次へ] をクリックします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch030.jpg">  
+
+<p>⑩ [特定の属性を選択します] で mS-DS-ConsistencyGuid を選択し、[次へ] をクリックします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch031.jpg">  
+
+<p>⑪ 構成ウィザードの最後まで進み、[インストール] をクリックします。  </p>
+<img src="/blog/azure-active-directory-connect/aadc_hardmatch/aadc_hardmatch032.jpg">  
+
+
+<p>以上で同期元ユーザーの切り替え作業は完了になります。  </p>
+<h3 id="＜補足＞"><a href="#＜補足＞" class="headerlink" title="＜補足＞"></a>＜補足＞</h3><ol>
+<li>ソフトマッチによるユーザーの切り替えは推奨しておりません。<br> AADC の同期処理 (オブジェクトの紐づけ) には、ハードマッチができない場合の次の手段として、proxyAddresses 属性、または UserPrincipalName 属性の値を一致させて紐づけを行う “ソフトマッチ” という方法があります。<br> ただし、今回のように既に同期済みの オンプレミス AD ユーザーを別のユーザーに変更する場合にソフトマッチを使用しますと、同期を解除した後にまず ImmutableID を削除する必要がありますが (ImmutableID が設定されたオブジェクトに対しては AADC はソフトマッチを行わないため) 、<strong>ImmutableID の削除はサポートしておりません。</strong><br> したがいましてソフトマッチによる切り替えは技術的には可能ですが、推奨しておりません。  </li>
+</ol>
+<p>上記内容が皆様の参考となりますと幸いです。  </p>
+<p>ご不明点などございましたら、ぜひ弊社サポートまでお問い合わせください。<br>※本情報の内容 (リンク先などを含む) は、作成日時点でのものであり、予告なく変更される場合があります。  </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../tags/AAD-Connect/">AAD Connect</a></li></ul>
+
+        
+        <a href="https://github.com/jpazureid/blog/edit/master/articles/azure-active-directory-connect/aadc_hardmatch.md" class="article-github-edit-link" target="_blank" rel="noopener noreferrer">GitHub で編集</a>
+        
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="../azureadconnect_faq/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">次の記事</strong>
+      <div class="article-nav-title">
+        
+          Azure AD Connect に関する FAQ
+        
+      </div>
+    </a>
+  
+  
+    <a href="../../azure-active-directory/your-password-doesnt-matter/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前の記事</strong>
+      <div class="article-nav-title">パスワードで攻撃は防げない - Your Pa$$word doesn&#39;t matter</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最近の投稿</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../../azure-active-directory/3-ways-aad-ca-balances-security-and-productivity/">Azure AD 条件付きアクセスを利用してセキュリティと生産性のバランスをとる 3 つの方法</a>
+          </li>
+        
+          <li>
+            <a href="../../active-directory-federation-service/adfs-AADSTS50107/">AADSTS50107 The requested federation realm object &#39;xxx&#39; does not exist. (Issuer ID/Issuer URI と SupportMultipleDomain)</a>
+          </li>
+        
+          <li>
+            <a href="../../azure-active-directory/5-identity-priorities-for-2020/">2020 年アイデンティティについて取り組むべき 5 つのポイント</a>
+          </li>
+        
+          <li>
+            <a href="../../azure-active-directory/microsoft-graph-api-signin-activity-reports-v2/">マネージド ID を利用して Azure AD サインイン アクティビティ レポートを CSV ファイルで取得する PowerShell スクリプト</a>
+          </li>
+        
+          <li>
+            <a href="../../azure-active-directory/troubleshoot-hybrid-azure-ad-join-managed/">Hybrid Azure AD Join 失敗時の初動調査方法について (マネージド編)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">タグ</h3>
+    <div class="widget">
+      <!-- <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AAD-Connect/">AAD Connect</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AADSTS50107/">AADSTS50107</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AD-FS/">AD FS</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AD-Sync/">AD Sync</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/ADSync/">ADSync</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Application/">Application</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD/">Azure AD</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-Application-Proxy/">Azure AD Application Proxy</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-B2B/">Azure AD B2B</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-Connect/">Azure AD Connect</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-Directory-Rolls/">Azure AD Directory Rolls</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-License/">Azure AD License</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-Active-Directory/">Azure Active Directory</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/CBA/">CBA</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Conditional-Access/">Conditional Access</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Device/">Device</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/DirSync/">DirSync</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/ExpressRoute/">ExpressRoute</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Federated-Domain/">Federated Domain</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Hard-match/">Hard match</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Hybrid-Azure-AD-Join/">Hybrid Azure AD Join</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Intune/">Intune</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Issuer-ID/">Issuer ID</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Issuer-URI/">Issuer URI</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/MFA/">MFA</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Managed-Domain/">Managed Domain</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Managed-ID/">Managed ID</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/OAuth/">OAuth</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/PRT/">PRT</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/PowerShell/">PowerShell</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Primary-Refresh-Token/">Primary Refresh Token</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/RBAC/">RBAC</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/SSO/">SSO</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/SSPR/">SSPR</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Security/">Security</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Sgin-in-log/">Sgin-in log</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Smart-lockout/">Smart lockout</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Subscription/">Subscription</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Tenant-Restrictions/">Tenant Restrictions</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Token/">Token</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Troubleshooting/">Troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/UPN/">UPN</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Windows-Defender-ATP/">Windows Defender ATP</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Workplace-Join/">Workplace Join</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Zero-Trust/">Zero Trust</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/graph-api/">graph api</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/signin-log/">signin log</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/supportMultipleDomain/">supportMultipleDomain</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/クレームルール/">クレームルール</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/サポート/">サポート</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/トラブルシューティング/">トラブルシューティング</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/情報採取/">情報採取</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/証明書/">証明書</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/証明書認証/">証明書認証</a></li></ul> -->
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AD-FS/">AD FS</a><span class="tag-list-count">16</span><ul><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/AADSTS50107">AADSTS50107</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Azure-AD">Azure AD</a><span class="tag-list-count">4</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Azure-AD-Connect">Azure AD Connect</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/CBA">CBA</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Conditional-Access">Conditional Access</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Federated-Domain">Federated Domain</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Hybrid-Azure-AD-Join">Hybrid Azure AD Join</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Intune">Intune</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Issuer-ID">Issuer ID</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Issuer-URI">Issuer URI</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/MFA">MFA</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Security">Security</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Smart-lockout">Smart lockout</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Workplace-Join">Workplace Join</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/supportMultipleDomain">supportMultipleDomain</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/クレームルール">クレームルール</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/トラブルシューティング">トラブルシューティング</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/証明書">証明書</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/証明書認証">証明書認証</a><span class="tag-list-count">1</span></li></ul></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AAD-Connect/">AAD Connect</a><span class="tag-list-count">22</span><ul><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/AD-Sync">AD Sync</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/ADSync">ADSync</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/Azure-AD">Azure AD</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/Azure-Active-Directory">Azure Active Directory</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/DirSync">DirSync</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/Hard-match">Hard match</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/SSO">SSO</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/UPN">UPN</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/サポート">サポート</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/情報採取">情報採取</a><span class="tag-list-count">2</span></li></ul></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/情報採取/">情報採取</a><span class="tag-list-count">2</span><ul><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/情報採取/AAD-Connect">AAD Connect</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/情報採取/サポート">サポート</a><span class="tag-list-count">2</span></li></ul></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD/">Azure AD</a><span class="tag-list-count">55</span><ul><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/AAD-Connect">AAD Connect</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/AD-FS">AD FS</a><span class="tag-list-count">4</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Application">Application</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Azure-AD-Application-Proxy">Azure AD Application Proxy</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Azure-AD-B2B">Azure AD B2B</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Azure-AD-Connect">Azure AD Connect</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Conditional-Access">Conditional Access</a><span class="tag-list-count">8</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Device">Device</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/ExpressRoute">ExpressRoute</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Federated-Domain">Federated Domain</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Hybrid-Azure-AD-Join">Hybrid Azure AD Join</a><span class="tag-list-count">5</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Intune">Intune</a><span class="tag-list-count">3</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/MFA">MFA</a><span class="tag-list-count">3</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Managed-Domain">Managed Domain</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Managed-ID">Managed ID</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/OAuth">OAuth</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/PRT">PRT</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/PowerShell">PowerShell</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Primary-Refresh-Token">Primary Refresh Token</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/RBAC">RBAC</a><span class="tag-list-count">2</span></li></ul></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">アーカイブ</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2020/03/">2020 / 03</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2020/02/">2020 / 02</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2020/01/">2020 / 01</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/12/">2019 / 12</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/11/">2019 / 11</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/10/">2019 / 10</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/09/">2019 / 09</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/07/">2019 / 07</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/05/">2019 / 05</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/02/">2019 / 02</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/12/">2018 / 12</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/11/">2018 / 11</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/10/">2018 / 10</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/09/">2018 / 09</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/08/">2018 / 08</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/07/">2018 / 07</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/06/">2018 / 06</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/05/">2018 / 05</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/04/">2018 / 04</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/03/">2018 / 03</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/02/">2018 / 02</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/01/">2018 / 01</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2017/12/">2017 / 12</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2017/11/">2017 / 11</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2017/10/">2017 / 10</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2017/06/">2017 / 06</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">タグクラウド</h3>
+    <div class="widget tagcloud">
+      <a href="../../tags/AAD-Connect/" style="font-size: 18.89px;">AAD Connect</a> <a href="../../tags/AADSTS50107/" style="font-size: 10px;">AADSTS50107</a> <a href="../../tags/AD-FS/" style="font-size: 17.78px;">AD FS</a> <a href="../../tags/AD-Sync/" style="font-size: 10px;">AD Sync</a> <a href="../../tags/ADSync/" style="font-size: 10px;">ADSync</a> <a href="../../tags/Application/" style="font-size: 10px;">Application</a> <a href="../../tags/Azure-AD/" style="font-size: 20px;">Azure AD</a> <a href="../../tags/Azure-AD-Application-Proxy/" style="font-size: 10px;">Azure AD Application Proxy</a> <a href="../../tags/Azure-AD-B2B/" style="font-size: 13.33px;">Azure AD B2B</a> <a href="../../tags/Azure-AD-Connect/" style="font-size: 11.11px;">Azure AD Connect</a> <a href="../../tags/Azure-AD-Directory-Rolls/" style="font-size: 10px;">Azure AD Directory Rolls</a> <a href="../../tags/Azure-AD-License/" style="font-size: 10px;">Azure AD License</a> <a href="../../tags/Azure-Active-Directory/" style="font-size: 10px;">Azure Active Directory</a> <a href="../../tags/CBA/" style="font-size: 10px;">CBA</a> <a href="../../tags/Conditional-Access/" style="font-size: 16.67px;">Conditional Access</a> <a href="../../tags/Device/" style="font-size: 10px;">Device</a> <a href="../../tags/DirSync/" style="font-size: 10px;">DirSync</a> <a href="../../tags/ExpressRoute/" style="font-size: 10px;">ExpressRoute</a> <a href="../../tags/Federated-Domain/" style="font-size: 10px;">Federated Domain</a> <a href="../../tags/Hard-match/" style="font-size: 10px;">Hard match</a> <a href="../../tags/Hybrid-Azure-AD-Join/" style="font-size: 14.44px;">Hybrid Azure AD Join</a> <a href="../../tags/Intune/" style="font-size: 12.22px;">Intune</a> <a href="../../tags/Issuer-ID/" style="font-size: 10px;">Issuer ID</a> <a href="../../tags/Issuer-URI/" style="font-size: 10px;">Issuer URI</a> <a href="../../tags/MFA/" style="font-size: 12.22px;">MFA</a> <a href="../../tags/Managed-Domain/" style="font-size: 10px;">Managed Domain</a> <a href="../../tags/Managed-ID/" style="font-size: 10px;">Managed ID</a> <a href="../../tags/OAuth/" style="font-size: 10px;">OAuth</a> <a href="../../tags/PRT/" style="font-size: 10px;">PRT</a> <a href="../../tags/PowerShell/" style="font-size: 11.11px;">PowerShell</a> <a href="../../tags/Primary-Refresh-Token/" style="font-size: 10px;">Primary Refresh Token</a> <a href="../../tags/RBAC/" style="font-size: 11.11px;">RBAC</a> <a href="../../tags/SSO/" style="font-size: 10px;">SSO</a> <a href="../../tags/SSPR/" style="font-size: 10px;">SSPR</a> <a href="../../tags/Security/" style="font-size: 15.56px;">Security</a> <a href="../../tags/Sgin-in-log/" style="font-size: 10px;">Sgin-in log</a> <a href="../../tags/Smart-lockout/" style="font-size: 10px;">Smart lockout</a> <a href="../../tags/Subscription/" style="font-size: 10px;">Subscription</a> <a href="../../tags/Tenant-Restrictions/" style="font-size: 10px;">Tenant Restrictions</a> <a href="../../tags/Token/" style="font-size: 10px;">Token</a> <a href="../../tags/Troubleshooting/" style="font-size: 10px;">Troubleshooting</a> <a href="../../tags/UPN/" style="font-size: 10px;">UPN</a> <a href="../../tags/Windows-Defender-ATP/" style="font-size: 10px;">Windows Defender ATP</a> <a href="../../tags/Workplace-Join/" style="font-size: 11.11px;">Workplace Join</a> <a href="../../tags/Zero-Trust/" style="font-size: 11.11px;">Zero Trust</a> <a href="../../tags/graph-api/" style="font-size: 12.22px;">graph api</a> <a href="../../tags/signin-log/" style="font-size: 12.22px;">signin log</a> <a href="../../tags/supportMultipleDomain/" style="font-size: 10px;">supportMultipleDomain</a> <a href="../../tags/クレームルール/" style="font-size: 10px;">クレームルール</a> <a href="../../tags/サポート/" style="font-size: 11.11px;">サポート</a> <a href="../../tags/トラブルシューティング/" style="font-size: 13.33px;">トラブルシューティング</a> <a href="../../tags/情報採取/" style="font-size: 11.11px;">情報採取</a> <a href="../../tags/証明書/" style="font-size: 10px;">証明書</a> <a href="../../tags/証明書認証/" style="font-size: 10px;">証明書認証</a>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 Azure Identity Support Japan<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="../../index.html" class="mobile-nav-link">Home</a>
+  
+    <a href="../../archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="../../fancybox/jquery.fancybox.css">
+  <script src="../../fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="../../js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  
+  <title>Azure AD Connect: ID 同期と重複属性の回復性の動作について | Japan Azure Identity Support Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="本記事は Technet Blog の更新停止に伴い https://blogs.technet.microsoft.com/jpazureid/2017/11/08/azure-ad-connect-duplicate-attribute/ の内容を移行したものです。元の記事の最新の更新情報については、本内容をご参照ください。  こんにちは、Azure &amp;amp; Identity サポート">
+<meta name="keywords" content="AAD Connect,Azure AD">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Azure AD Connect: ID 同期と重複属性の回復性の動作について">
+<meta property="og:url" content="https://jpazureid.github.io/blog/azure-active-directory-connect/duplicate-attribute-recoverability-behavior/index.html">
+<meta property="og:site_name" content="Japan Azure Identity Support Blog">
+<meta property="og:description" content="本記事は Technet Blog の更新停止に伴い https://blogs.technet.microsoft.com/jpazureid/2017/11/08/azure-ad-connect-duplicate-attribute/ の内容を移行したものです。元の記事の最新の更新情報については、本内容をご参照ください。  こんにちは、Azure &amp;amp; Identity サポート">
+<meta property="og:locale" content="ja">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/duplicate-attribute-recoverability-behavior/2-1.png">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/duplicate-attribute-recoverability-behavior/2-2-1.png">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/duplicate-attribute-recoverability-behavior/2-2-2.png">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/duplicate-attribute-recoverability-behavior/2-3.png">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/duplicate-attribute-recoverability-behavior/2-3-2.png">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/duplicate-attribute-recoverability-behavior/31.png">
+<meta property="og:updated_time" content="2020-03-05T03:14:38.193Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Azure AD Connect: ID 同期と重複属性の回復性の動作について">
+<meta name="twitter:description" content="本記事は Technet Blog の更新停止に伴い https://blogs.technet.microsoft.com/jpazureid/2017/11/08/azure-ad-connect-duplicate-attribute/ の内容を移行したものです。元の記事の最新の更新情報については、本内容をご参照ください。  こんにちは、Azure &amp;amp; Identity サポート">
+<meta name="twitter:image" content="https://jpazureid.github.io/blog/azure-active-directory-connect/duplicate-attribute-recoverability-behavior/2-1.png">
+  
+    <link rel="alternate" href="../../blog/atom.xml" title="Japan Azure Identity Support Blog" type="application/atom+xml">
+  
+
+  <link rel="icon" href="./favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
+  <link rel="manifest" href="./site.webmanifest">
+  <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="theme-color" content="#ffffff">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="site-header-logo"></div>
+  <div id="site-header-blog-wrapper"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="../../index.html">Home</a>
+        
+          <a class="main-nav-link" href="../../archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="../../blog/atom.xml" title="RSSフィード"></a>
+        
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//www.bing.com/search" method="get" accept-charset="UTF-8" name="bing-search" onsubmit="var f=this;if(f['q'].value){var searchUrl =  'https://www.bing.com/search?q=' +  encodeURIComponent(f['q'].value + ' site:' + f['sitesearch'].value) ;window.open(searchUrl, 'blank') };return false;" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="検索"><button type="submit" id="nav-search-btn" class="search-form-submit"></button><input type="hidden" name="sitesearch" value="https://jpazureid.github.io/blog"></form>
+      </div>
+    </div>
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="../../index.html" id="logo">Japan Azure Identity Support Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="../../index.html" id="subtitle">日本マイクロソフトの Azure Active Directory と AD FS に関するサポート情報のブログです。</a>
+        </h2>
+      
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-azure-active-directory-connect/duplicate-attribute-recoverability-behavior" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+    
+      <header class="article-header-single">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Azure AD Connect: ID 同期と重複属性の回復性の動作について
+    </h1>
+  
+
+      </header>
+      <div class="article-share">
+        Last Update: 
+        <a href class="article-date-single">
+  <time datetime="2017-11-07T15:00:00.000Z" itemprop="datePublished">2017-11-08</time>
+</a>
+        
+        
+        <a href="https://github.com/jpazureid/blog/issues/new?title=&body=%0A%0A---%0A%0A%23%23%23%23+Document+Details%0A%0A%E2%9A%A0+*Do+not+edit+this+section.%0A%0A*+ID%3A+a1f04342-765e-51d3-a3ea-41b75c34d821%0A*+%E5%AF%BE%E8%B1%A1%E8%A8%98%E4%BA%8B%3A+%5BAzure+AD+Connect%3A+ID+%E5%90%8C%E6%9C%9F%E3%81%A8%E9%87%8D%E8%A4%87%E5%B1%9E%E6%80%A7%E3%81%AE%E5%9B%9E%E5%BE%A9%E6%80%A7%E3%81%AE%E5%8B%95%E4%BD%9C%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6%5D%28https%3A%2F%2Fjpazureid.github.io%2Fblog%2Fazure-active-directory-connect%2Fduplicate-attribute-recoverability-behavior%2F%29%0A*+Content+Source%3A+%5Barticles%2Fazure-active-directory-connect%2Fduplicate-attribute-recoverability-behavior.md%5D%28https%3A%2F%2Fgithub.com%2Fjpazureid%2Fblog%2Fblob%2Fmaster%2Farticles%2Fazure-active-directory-connect%2Fduplicate-attribute-recoverability-behavior.md%29%0A*+Author%3A+" class="article-github-issue-link" target="_blank" rel="noopener noreferrer">feedback</a>
+        
+        <a data-url="https://jpazureid.github.io/blog/azure-active-directory-connect/duplicate-attribute-recoverability-behavior/" data-id="ck7e6fl7800834ep6lq0v068l" class="article-share-link">共有</a>
+      </div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>本記事は Technet Blog の更新停止に伴い <a href="https://blogs.technet.microsoft.com/jpazureid/2017/11/08/azure-ad-connect-duplicate-attribute/" target="_blank" rel="noopener">https://blogs.technet.microsoft.com/jpazureid/2017/11/08/azure-ad-connect-duplicate-attribute/</a> の内容を移行したものです。<br>元の記事の最新の更新情報については、本内容をご参照ください。</p>
+</blockquote>
+<p>こんにちは、Azure &amp; Identity サポート チームの後藤です。  </p>
+<p>2017 年 3 月に多くのテナントで有効化された ID 同期と重複属性の回復性の動作についてご紹介します。<br>なお、2017 年 10 月 30 日以降は例外なくすべてのテナントでこの機能は有効になっています。</p>
+<p>以下のような流れでご紹介します。</p>
+<p>&lt;目次&gt;</p>
+<ol>
+<li>以前の動作の概要</li>
+<li>ID 同期と重複属性の回復性の動作</li>
+<li>重複状態からの解消について</li>
+<li>ID 同期と重複属性の回復性が動作しないケース</li>
+</ol>
+<h2 id="1-以前の動作の概要"><a href="#1-以前の動作の概要" class="headerlink" title="1. 以前の動作の概要"></a>1. 以前の動作の概要</h2><p>以前は、ディレクトリ同期の際に UPN または ProxyAddresses の属性が Azure AD 内で重複するようなユーザー オブジェクトを Azure AD に同期を試みた場合、エラーが発生し、ユーザー オブジェクトを Azure AD に作成することができませんでした。</p>
+<p>一例 :<br>Azure AD に、UPN : <a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a> (オリジナル user01) のユーザーが存在します。<br>この <a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a> ユーザーは、過去にディレクトリ同期によって登録されたユーザーですが、現在は一度ディレクトリ同期運用をやめており、テナントのディレクトリ同期も無効化しています。<br>この状態で、オンプレミス AD ドメインに UPN : <a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a> (新 user01) のユーザーを作成します。<br>改めてディレクトリ同期を行う運用になったので、Azure AD Connect で同じテナントに同期を行うと、オリジナル user01 と新 user01 の UPN 重複エラーが発生し、Azure AD へのエクスポートに失敗します。</p>
+<p>同じ UPN を持つユーザーであれば UPN ソフトマッチにより [重複ではなく結合] するのでは？と思われる方もいらっしゃるかもしれませんが、オリジナル user01 は [過去にディレクトリ同期で登録されたユーザー] であるため、ImmutableID がすでにセットされています。<br>そのため、この例ではソフトマッチは行われず、オリジナル user01 と新 user01 が別のオブジェクトとして扱われ、UPN 値の重複が問題となります。<br>なお、ProxyAddresses 属性のメール アドレス (プライマリ , セカンダリ共に) も UPN と同様に重複が問題となります。</p>
+<p>このエラーを検知した場合、下記のような内容のメールで技術的通知の連絡先に通知されます。</p>
+<ul>
+<li>“Unable to update this object because the following attributes associated with this object have values that may already be associated with another object in your local directory services: [<strong>UserPrincipalName</strong><a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a>;]. Correct or remove the duplicate values in your local directory.”<br>(このオブジェクトに紐づく属性値 [<strong>UserPrincipalName</strong> user01@contoso.com;] は、ローカル ディレクトリ サービスの他のオブジェクトに既に紐付けられているため、このオブジェクトを更新できません。ローカル ディレクトリの重複している属性値を変更または削除してください。)<!-- textlint-disable --></li>
+<li>Unable to update this object because the following attributes associated with this object have values that may already be associated with another object in your local directory services: [<strong>ProxyAddresses</strong>SMTP:<a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a>;]. Correct or remove the duplicate values in your local directory.”<br>(このオブジェクトに紐づく属性値 [<strong>ProxyAddresses</strong> SMTP:<a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a>;] は、ローカル ディレクトリ サービスの他のオブジェクトに既に紐付けられているため、このオブジェクトを更新できません。ローカル ディレクトリの重複している属性値を変更または削除してください。)<!-- textlint-eable -->
+
+</li>
+</ul>
+<p>以降、重複した属性値の状態を解消する対処を実施するまでは、定期的な同期処理が行われる毎に失敗し、このメールが通知されます。<br>重複属性の回復性が有効になるまでは！</p>
+<h2 id="2-ID-同期と重複属性の回復性の動作"><a href="#2-ID-同期と重複属性の回復性の動作" class="headerlink" title="2. ID 同期と重複属性の回復性の動作"></a>2. ID 同期と重複属性の回復性の動作</h2><p>前述の例のように、ディレクトリ同期の際に UPN または ProxyAddresses の属性が Azure AD にて重複するようなユーザー オブジェクトを Azure AD に同期しようとしても、重複属性の回復性が有効なテナントでは、Export 処理時のエラーが出力されることなく、ユーザー オブジェクトが Azure AD に作成されます。<br>もちろん、値が重複した 2 つのオブジェクトを登録することはできないため、後から同期により生成されるユーザーのプレフィックス部分には 4 桁の数字がつき、サフィックス部分にはイニシャル ドメイン名が付与されます。</p>
+<p>一例 :</p>
+<ul>
+<li>Azure AD に、UPN : <a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a> (オリジナル user01) のユーザーが存在します。</li>
+<li>この <a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a> ユーザーは、過去にディレクトリ同期によって登録されたユーザーですが、現在は一度ディレクトリ同期運用をやめており、テナントのディレクトリ同期も無効化しています。</li>
+<li>この状態で、オンプレミス AD ドメインに UPN : <a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a> (新 user01) のユーザーを作成します。</li>
+<li>改めてディレクトリ同期を行う運用になったので、Azure AD Connect で同じテナントに同期を行うと、オリジナル user01 と新 user01 の UPN 重複状態が検知されます。</li>
+<li>ここで重複属性の回復性の機能により、新 user01 が Azure AD に同期されると UPN : <a href="mailto:user012457@contoso.onmicrosoft.com" target="_blank" rel="noopener">user012457@contoso.onmicrosoft.com</a> のユーザーが同期により作成されます。<br>(2457 の 4 桁の数字はランダムです)</li>
+</ul>
+<p>この重複属性の回復性に該当する同期を検知した場合、下記のような内容のメールで技術的通知の連絡先に通知されます。</p>
+<ul>
+<li><p>このオブジェクトは Azure Active Directory で更新されましたが、次の属性が他のオブジェクト [UserPrincipalName <a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a>;] と関連付けられているため、一部のプロパティが変更されています。この問題を解決する手順に関しては、<a href="https://aka.ms/duplicateattributeresiliency" target="_blank" rel="noopener">https://aka.ms/duplicateattributeresiliency</a> をご覧ください。</p>
+</li>
+<li><p>このオブジェクトは Azure Active Directory で更新されましたが、次の属性が他のオブジェクト [ProxyAddresses SMTP:<a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a>;] と関連付けられているため、一部のプロパティが変更されています。この問題を解決する手順に関しては、<a href="https://aka.ms/duplicateattributeresiliency" target="_blank" rel="noopener">https://aka.ms/duplicateattributeresiliency</a> をご覧ください。</p>
+</li>
+</ul>
+<p>このメールは検知された初回のみ送信され、以降繰り返される同期のタイミングでは送信されません。<br>そのため、後から重複対象のオブジェクトをメールの履歴のみで探すのが困難になることが予想されますが、ご安心ください。<br>PowerShell コマンドで重複する属性の競合のエラー状況を DirSyncProvisioningErrors から確認できます。</p>
+<p>例 :</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Get-MsolDirSyncProvisioningError -ErrorCategory PropertyConflict</span><br><span class="line"></span><br><span class="line">ExtensionData      : System.Runtime.Serialization.ExtensionDataObject</span><br><span class="line">DisplayName        : user01</span><br><span class="line">ImmutableId        : EVxRjF4MDACb9TViLrGGvA==</span><br><span class="line">LastDirSyncTime    : <span class="number">2017</span>/<span class="number">10</span>/<span class="number">20</span> <span class="number">5</span>:<span class="number">02</span>:<span class="number">43</span></span><br><span class="line">ObjectId           : <span class="number">87</span>d11ec2-e8ce-<span class="number">4</span>a99-<span class="number">801</span>a-<span class="number">6352</span>d5678a03</span><br><span class="line">ObjectType         : User</span><br><span class="line">ProvisioningErrors : &#123;ProxyAddresses, UserPrincipalName&#125;</span><br><span class="line">ProxyAddresses     : &#123;smtp:user01@contoso.onmicrosoft.com, smtp:user012457@contoso.onmicrosoft.com&#125;</span><br><span class="line">UserPrincipalName  : user012457@contoso.onmicrosoft.com</span><br></pre></td></tr></table></figure>
+
+<p>以上は UserPrincipalName が重複する場合の動作ですが ProxyAddresses の値が重複する場合には重複した情報は削除されます。例えば UserPrincpalName と ProxyAddresses の両方が重複している場合には、ディレクトリ同期の結果 UserPricipalName は “+&lt;4DigitNumber&gt;@.onmicrosoft.com”　になり、 ProxyAddresses は null となります。</p>
+<h2 id="3-重複状態からの解消について"><a href="#3-重複状態からの解消について" class="headerlink" title="3. 重複状態からの解消について"></a>3. 重複状態からの解消について</h2><p>約一時間に一度のバック グラウンドのタイマー タスクが Azure プラットフォームで動作しており重複が解消されているか確認します。重複属性を持つユーザーの削除、重複属性の値の修正により、重複している属性の値の重複が解消されると、DirSyncProvisioningErrors を消す動作と UPN 及び ProxyAddresses に格納されている “+&lt;<em>4DigitNumber&gt;@.onmicrosoft.com</em>”　の値をオンプレミス AD から元々エクスポートしようとしていた UPN 及び ProxyAddresses に格納されている値に自動的に修正する動作が生じます。<br>経験則にはなりますが、重複が解消されてから DirSyncProvisioningErrors を消す動作と UPN 及び ProxyAddresses の自動解決には早い場合には 1.5 時間、時間を要する場合では 24 時間ほどかかります。</p>
+<p>例 :</p>
+<ol>
+<li>Azure AD 上のオリジナル user01 である <a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a> というユーザーが削除され、新 user01 との UPN の重複が解消されます。</li>
+<li>Azure 側で約 1 時間に 1 回行われているバックグラウンドのタイマー タスクで重複が解消されことを検知します。</li>
+<li>新 user01 オブジェクトに対する DirSyncProvisioningErrors が消え、Azure AD に存在する UPN が <a href="mailto:user012457@contoso.onmicrosoft.com" target="_blank" rel="noopener">user012457@contoso.onmicrosoft.com</a>のユーザーの UPN が <a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a> に自動変更されます。</li>
+</ol>
+<h2 id="4-ID-同期と重複属性の回復性が動作しないケース"><a href="#4-ID-同期と重複属性の回復性が動作しないケース" class="headerlink" title="4. ID 同期と重複属性の回復性が動作しないケース"></a>4. ID 同期と重複属性の回復性が動作しないケース</h2><p>次のようなケースでは ID 同期と重複属性の回復性は動作しません。</p>
+<h3 id="シナリオ-1-オンプレミス-Active-Directory-上の-UPN-名に含まれるドメイン名が-Azure-AD-にはカスタムドメインとして登録されていない場合"><a href="#シナリオ-1-オンプレミス-Active-Directory-上の-UPN-名に含まれるドメイン名が-Azure-AD-にはカスタムドメインとして登録されていない場合" class="headerlink" title="シナリオ 1. オンプレミス Active Directory 上の UPN 名に含まれるドメイン名が Azure AD にはカスタムドメインとして登録されていない場合"></a>シナリオ 1. オンプレミス Active Directory 上の UPN 名に含まれるドメイン名が Azure AD にはカスタムドメインとして登録されていない場合</h3><p>オンプレミス AD ドメイン上でのあるユーザーの UPN の値が <a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a> だとします。<br>この AD ドメインのディレクトリ同期先である Azure AD のイニシャル ドメインがonmicrosoft.com であり、カスタム ドメインとして contoso.com を登録していない環境であるとします。</p>
+<p>この環境でディレクトリ同期を実施した結果 Azure AD に作成されるユーザーの UPN の値は、呼応するカスタム ドメインが存在しないので <a href="mailto:user01@contoso.onmicrosoft.com" target="_blank" rel="noopener">user01@contoso.onmicrosoft.com</a> というようになります。<br>また、この Azure AD に同期作成されたユーザーに対して属性が重複するユーザーを同期した場合 (前述の 1. 2. のような条件を満たしたケース) が生じた場合には、後から同期されたユーザーはこれまでのご案内と同様に <a href="mailto:user012547@contoso.onmicrosoft.com" target="_blank" rel="noopener">user012547@contoso.onmicrosoft.com</a> というようになります。<br>しかし、この状況ではオリジナルの user01 が削除されるなど、重複状態が解消されても、<a href="mailto:user012547@contoso.onmicrosoft.com" target="_blank" rel="noopener">user012547@contoso.onmicrosoft.com</a> ユーザーの自動　UPN 変更回復は実行されません。</p>
+<h3 id="シナリオ-2-SipProxyAddress-の値が重複する場合"><a href="#シナリオ-2-SipProxyAddress-の値が重複する場合" class="headerlink" title="シナリオ 2. SipProxyAddress の値が重複する場合"></a>シナリオ 2. SipProxyAddress の値が重複する場合</h3><p>ProxyAddress 属性に SIP: として指定する SipProxyAddress 値は、Azure AD ユーザーに同期されると SipProxyAddress 属性にセットされます。<br>この SipProxyAddress は前述の 1. や 2. のような条件で重複するケースの場合は、重複属性の回復性は動作せず、”+&lt;4DigitNumber&gt;@.onmicrosoft.com” のユーザーが Azure AD に作成されることもありません。<br>これは、今回の重複属性の回復性の発動対象の値が Azure AD 側のユーザーが保持する UPN と ProxyAddresses のみとなり、SipProxyAddress の重複は発動対象ではないことが原因です。以下で詳細を解説します。</p>
+<p>SipProxyAddress とは、下記一例にあるコマンドで確認することができる属性です。</p>
+<p>一例 :</p>
+<ol>
+<li><p>Connect-AzureAD コマンドで Azure AD にサインインします。</p>
+<img src="/blog/azure-active-directory-connect/duplicate-attribute-recoverability-behavior/2-1.png">
+</li>
+<li><p>Get-AzureADUser コマンドで対象ユーザーのオブジェクト ID を確認します。</p>
+<img src="/blog/azure-active-directory-connect/duplicate-attribute-recoverability-behavior/2-2-1.png">
+<img src="/blog/azure-active-directory-connect/duplicate-attribute-recoverability-behavior/2-2-2.png">
+</li>
+<li><p>Get-AzureADUser コマンドで対象ユーザーについてプロパティを確認します。</p>
+<img src="/blog/azure-active-directory-connect/duplicate-attribute-recoverability-behavior/2-3.png">
+<img src="/blog/azure-active-directory-connect/duplicate-attribute-recoverability-behavior/2-3-2.png">
+
+</li>
+</ol>
+<p>オンプレミス AD のユーザーの ProxyAddresses に “SIP:“ より始まる Lync 及び Skype で利用するアドレスが値として格納されている場合に、ディレクトリ同期をすると Azure AD に生成されるユーザーの SipProxyAddress にこの値が格納されます。</p>
+<p>具体的な例は次のとおりです。</p>
+<ul>
+<li>Azure AD に、SipProxyAddress 属性に <a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a> の値を持つユーザーが存在します (オリジナル user01)。</li>
+<li>このオリジナル user01 ユーザーは、過去にディレクトリ同期によって登録されたユーザーですが、現在は一度ディレクトリ同期運用をやめており、テナントのディレクトリ同期も無効化しています。</li>
+<li>この状態で、オンプレミス AD ドメインに ProxyAddresses 属性内に [SIP: <a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a>] の値を持つユーザーを作成します (新 user01)。</li>
+<li>改めてディレクトリ同期を行う運用になったので、Azure AD Connect で同じテナントに同期を行うと、オリジナル user01 と新 user01 の SipProxyAddress 重複状態が検知されますが、重複属性の回復性機能の対象外であるため、単純に重複エラーとなり、Azure AD へのエクスポートが行われない結果となります。</li>
+</ul>
+<p>このエラーを検知した場合、下記のような内容のメールで技術的通知の連絡先に通知されます。<br>また、本メールは同期の処理が繰り返し行われ、都度エクスポートが失敗する度に通知されます。</p>
+<ul>
+<li>このオブジェクトを更新できません。このオブジェクトに関連付けられている次の属性の値が、ローカル ディレクトリ サービスの別のオブジェクトに既に関連付けられていることが原因として考えられます: [SipProxyAddress <a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a> ディレクトリで重複している値を修正または削除してください。属性値が重複しているオブジェクトの検出方法については、<a href="http://support.microsoft.com/kb/2647098" target="_blank" rel="noopener">http://support.microsoft.com/kb/2647098</a> を参照してください。</li>
+</ul>
+<h3 id="シナリオ-3-一度同期対象から外したユーザーを再度同期対象に戻した場合"><a href="#シナリオ-3-一度同期対象から外したユーザーを再度同期対象に戻した場合" class="headerlink" title="シナリオ 3. 一度同期対象から外したユーザーを再度同期対象に戻した場合"></a>シナリオ 3. 一度同期対象から外したユーザーを再度同期対象に戻した場合</h3><p>一度同期対象から外した後で、別のユーザーに同じ ProxyAddresses を設定し、同期します。同期対象から外したユーザーは、 Azure AD 上でも削除されますが、完全に削除されるのではなく 30 日間はごみ箱に保存されます。このゴミ箱にユーザー情報が残っていても、この場合には重複は検出されません。その上で、同期対象から外したユーザーを再度同期対象にします。このとき、別のユーザーではすでに ProxyAddresses に同じものが設定されているので重複が生じますが、重複属性の回復性機能が動作すれば、ユーザー自体の同期はされますが、 ProxyAddresses は空になると予測されますが、そうなりません。<br>わかりにくいと思いますので、具体例を紹介します。</p>
+<ol>
+<li><a href="mailto:User01@contoso.com" target="_blank" rel="noopener">User01@contoso.com</a> というユーザーは ProxyAddresses として SMTP:<a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a> をもち、その情報が Azure AD に同期されています。</li>
+<li><a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a> を同期対象から解除します。この後で同期処理が行われることにより <a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a> は Azure AD 上はごみ箱に入ります。</li>
+<li><a href="mailto:user02@contoso.com" target="_blank" rel="noopener">user02@contoso.com</a> “ をオンプレミス AD に作成し、ProxyAddresses として <a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a> を設定します。ディレクトリ同期をし、Azure AD にユーザーが生成されます。また、 ProxyAddresses <a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a> を持つ削除されておらず有効なアカウントは存在しないため、重複検出機能は動作せずにそのまま作成されます。</li>
+<li><a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a> を同期対象に戻します。その後、ディレクトリ同期をしますと、Azure AD のごみ箱にあります <a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a> を再度有効なユーザーアカウントに変更する処理が行われます。しかし、このとき ProxyAddresses が重複しているためエラーが発生しますが、このとき重複検出の回復性の機能は動作せずにユーザーは有効にされず、 Azure AD Connect としても同期のエラーを検出します。</li>
+</ol>
+<p>このシナリオに合致するケースでは、下記のようなエラーが記録されます。</p>
+<img src="/blog/azure-active-directory-connect/duplicate-attribute-recoverability-behavior/31.png">
+
+<p>このエラーを検知した場合も、下記のような内容のメールで技術的通知の連絡先に通知されます。</p>
+<p>Unable to update this object because the following attributes associated with this object have values that may already be associated with another object in your local directory services: [<strong>ProxyAddresses</strong>SMTP:<a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a>;]. Correct or remove the duplicate values in your local directory.”<br>(このオブジェクトに紐づく属性値 [<strong>ProxyAddresses</strong> SMTP:<a href="mailto:user01@contoso.com" target="_blank" rel="noopener">user01@contoso.com</a>;] は、ローカル ディレクトリ サービスの他のオブジェクトに既に紐付けられているため、このオブジェクトを更新できません。ローカル ディレクトリの重複している属性値を変更または削除してください。)</p>
+<p>以降、重複した ProxyAddresses の値の状態を解消する対処を実施するまでは、定期的な同期処理が行われる毎に失敗し、このメールが通知されます。</p>
+<p>「コミュニティにおけるマイクロソフト社員による発言やコメントは、マイクロソフトの正式な見解またはコメントではありません。」</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../tags/AAD-Connect/">AAD Connect</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../tags/Azure-AD/">Azure AD</a></li></ul>
+
+        
+        <a href="https://github.com/jpazureid/blog/edit/master/articles/azure-active-directory-connect/duplicate-attribute-recoverability-behavior.md" class="article-github-edit-link" target="_blank" rel="noopener noreferrer">GitHub で編集</a>
+        
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="../../azure-active-directory/azuread-access-denied/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">次の記事</strong>
+      <div class="article-nav-title">
+        
+          「アクセス権がありません」のエラーについて
+        
+      </div>
+    </a>
+  
+  
+    <a href="../../azure-active-directory/subscription-azure-ad-relationship/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前の記事</strong>
+      <div class="article-nav-title">Azure サブスクリプションと Azure AD の管理者</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最近の投稿</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../../azure-active-directory/3-ways-aad-ca-balances-security-and-productivity/">Azure AD 条件付きアクセスを利用してセキュリティと生産性のバランスをとる 3 つの方法</a>
+          </li>
+        
+          <li>
+            <a href="../../active-directory-federation-service/adfs-AADSTS50107/">AADSTS50107 The requested federation realm object &#39;xxx&#39; does not exist. (Issuer ID/Issuer URI と SupportMultipleDomain)</a>
+          </li>
+        
+          <li>
+            <a href="../../azure-active-directory/5-identity-priorities-for-2020/">2020 年アイデンティティについて取り組むべき 5 つのポイント</a>
+          </li>
+        
+          <li>
+            <a href="../../azure-active-directory/microsoft-graph-api-signin-activity-reports-v2/">マネージド ID を利用して Azure AD サインイン アクティビティ レポートを CSV ファイルで取得する PowerShell スクリプト</a>
+          </li>
+        
+          <li>
+            <a href="../../azure-active-directory/troubleshoot-hybrid-azure-ad-join-managed/">Hybrid Azure AD Join 失敗時の初動調査方法について (マネージド編)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">タグ</h3>
+    <div class="widget">
+      <!-- <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AAD-Connect/">AAD Connect</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AADSTS50107/">AADSTS50107</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AD-FS/">AD FS</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AD-Sync/">AD Sync</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/ADSync/">ADSync</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Application/">Application</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD/">Azure AD</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-Application-Proxy/">Azure AD Application Proxy</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-B2B/">Azure AD B2B</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-Connect/">Azure AD Connect</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-Directory-Rolls/">Azure AD Directory Rolls</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-License/">Azure AD License</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-Active-Directory/">Azure Active Directory</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/CBA/">CBA</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Conditional-Access/">Conditional Access</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Device/">Device</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/DirSync/">DirSync</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/ExpressRoute/">ExpressRoute</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Federated-Domain/">Federated Domain</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Hard-match/">Hard match</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Hybrid-Azure-AD-Join/">Hybrid Azure AD Join</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Intune/">Intune</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Issuer-ID/">Issuer ID</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Issuer-URI/">Issuer URI</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/MFA/">MFA</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Managed-Domain/">Managed Domain</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Managed-ID/">Managed ID</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/OAuth/">OAuth</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/PRT/">PRT</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/PowerShell/">PowerShell</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Primary-Refresh-Token/">Primary Refresh Token</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/RBAC/">RBAC</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/SSO/">SSO</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/SSPR/">SSPR</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Security/">Security</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Sgin-in-log/">Sgin-in log</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Smart-lockout/">Smart lockout</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Subscription/">Subscription</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Tenant-Restrictions/">Tenant Restrictions</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Token/">Token</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Troubleshooting/">Troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/UPN/">UPN</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Windows-Defender-ATP/">Windows Defender ATP</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Workplace-Join/">Workplace Join</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Zero-Trust/">Zero Trust</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/graph-api/">graph api</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/signin-log/">signin log</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/supportMultipleDomain/">supportMultipleDomain</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/クレームルール/">クレームルール</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/サポート/">サポート</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/トラブルシューティング/">トラブルシューティング</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/情報採取/">情報採取</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/証明書/">証明書</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/証明書認証/">証明書認証</a></li></ul> -->
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AD-FS/">AD FS</a><span class="tag-list-count">16</span><ul><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/AADSTS50107">AADSTS50107</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Azure-AD">Azure AD</a><span class="tag-list-count">4</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Azure-AD-Connect">Azure AD Connect</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/CBA">CBA</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Conditional-Access">Conditional Access</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Federated-Domain">Federated Domain</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Hybrid-Azure-AD-Join">Hybrid Azure AD Join</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Intune">Intune</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Issuer-ID">Issuer ID</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Issuer-URI">Issuer URI</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/MFA">MFA</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Security">Security</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Smart-lockout">Smart lockout</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Workplace-Join">Workplace Join</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/supportMultipleDomain">supportMultipleDomain</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/クレームルール">クレームルール</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/トラブルシューティング">トラブルシューティング</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/証明書">証明書</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/証明書認証">証明書認証</a><span class="tag-list-count">1</span></li></ul></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AAD-Connect/">AAD Connect</a><span class="tag-list-count">22</span><ul><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/AD-Sync">AD Sync</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/ADSync">ADSync</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/Azure-AD">Azure AD</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/Azure-Active-Directory">Azure Active Directory</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/DirSync">DirSync</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/Hard-match">Hard match</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/SSO">SSO</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/UPN">UPN</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/サポート">サポート</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/情報採取">情報採取</a><span class="tag-list-count">2</span></li></ul></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/情報採取/">情報採取</a><span class="tag-list-count">2</span><ul><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/情報採取/AAD-Connect">AAD Connect</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/情報採取/サポート">サポート</a><span class="tag-list-count">2</span></li></ul></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD/">Azure AD</a><span class="tag-list-count">55</span><ul><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/AAD-Connect">AAD Connect</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/AD-FS">AD FS</a><span class="tag-list-count">4</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Application">Application</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Azure-AD-Application-Proxy">Azure AD Application Proxy</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Azure-AD-B2B">Azure AD B2B</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Azure-AD-Connect">Azure AD Connect</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Conditional-Access">Conditional Access</a><span class="tag-list-count">8</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Device">Device</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/ExpressRoute">ExpressRoute</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Federated-Domain">Federated Domain</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Hybrid-Azure-AD-Join">Hybrid Azure AD Join</a><span class="tag-list-count">5</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Intune">Intune</a><span class="tag-list-count">3</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/MFA">MFA</a><span class="tag-list-count">3</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Managed-Domain">Managed Domain</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Managed-ID">Managed ID</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/OAuth">OAuth</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/PRT">PRT</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/PowerShell">PowerShell</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Primary-Refresh-Token">Primary Refresh Token</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/RBAC">RBAC</a><span class="tag-list-count">2</span></li></ul></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">アーカイブ</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2020/03/">2020 / 03</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2020/02/">2020 / 02</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2020/01/">2020 / 01</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/12/">2019 / 12</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/11/">2019 / 11</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/10/">2019 / 10</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/09/">2019 / 09</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/07/">2019 / 07</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/05/">2019 / 05</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/02/">2019 / 02</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/12/">2018 / 12</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/11/">2018 / 11</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/10/">2018 / 10</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/09/">2018 / 09</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/08/">2018 / 08</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/07/">2018 / 07</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/06/">2018 / 06</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/05/">2018 / 05</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/04/">2018 / 04</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/03/">2018 / 03</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/02/">2018 / 02</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/01/">2018 / 01</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2017/12/">2017 / 12</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2017/11/">2017 / 11</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2017/10/">2017 / 10</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2017/06/">2017 / 06</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">タグクラウド</h3>
+    <div class="widget tagcloud">
+      <a href="../../tags/AAD-Connect/" style="font-size: 18.89px;">AAD Connect</a> <a href="../../tags/AADSTS50107/" style="font-size: 10px;">AADSTS50107</a> <a href="../../tags/AD-FS/" style="font-size: 17.78px;">AD FS</a> <a href="../../tags/AD-Sync/" style="font-size: 10px;">AD Sync</a> <a href="../../tags/ADSync/" style="font-size: 10px;">ADSync</a> <a href="../../tags/Application/" style="font-size: 10px;">Application</a> <a href="../../tags/Azure-AD/" style="font-size: 20px;">Azure AD</a> <a href="../../tags/Azure-AD-Application-Proxy/" style="font-size: 10px;">Azure AD Application Proxy</a> <a href="../../tags/Azure-AD-B2B/" style="font-size: 13.33px;">Azure AD B2B</a> <a href="../../tags/Azure-AD-Connect/" style="font-size: 11.11px;">Azure AD Connect</a> <a href="../../tags/Azure-AD-Directory-Rolls/" style="font-size: 10px;">Azure AD Directory Rolls</a> <a href="../../tags/Azure-AD-License/" style="font-size: 10px;">Azure AD License</a> <a href="../../tags/Azure-Active-Directory/" style="font-size: 10px;">Azure Active Directory</a> <a href="../../tags/CBA/" style="font-size: 10px;">CBA</a> <a href="../../tags/Conditional-Access/" style="font-size: 16.67px;">Conditional Access</a> <a href="../../tags/Device/" style="font-size: 10px;">Device</a> <a href="../../tags/DirSync/" style="font-size: 10px;">DirSync</a> <a href="../../tags/ExpressRoute/" style="font-size: 10px;">ExpressRoute</a> <a href="../../tags/Federated-Domain/" style="font-size: 10px;">Federated Domain</a> <a href="../../tags/Hard-match/" style="font-size: 10px;">Hard match</a> <a href="../../tags/Hybrid-Azure-AD-Join/" style="font-size: 14.44px;">Hybrid Azure AD Join</a> <a href="../../tags/Intune/" style="font-size: 12.22px;">Intune</a> <a href="../../tags/Issuer-ID/" style="font-size: 10px;">Issuer ID</a> <a href="../../tags/Issuer-URI/" style="font-size: 10px;">Issuer URI</a> <a href="../../tags/MFA/" style="font-size: 12.22px;">MFA</a> <a href="../../tags/Managed-Domain/" style="font-size: 10px;">Managed Domain</a> <a href="../../tags/Managed-ID/" style="font-size: 10px;">Managed ID</a> <a href="../../tags/OAuth/" style="font-size: 10px;">OAuth</a> <a href="../../tags/PRT/" style="font-size: 10px;">PRT</a> <a href="../../tags/PowerShell/" style="font-size: 11.11px;">PowerShell</a> <a href="../../tags/Primary-Refresh-Token/" style="font-size: 10px;">Primary Refresh Token</a> <a href="../../tags/RBAC/" style="font-size: 11.11px;">RBAC</a> <a href="../../tags/SSO/" style="font-size: 10px;">SSO</a> <a href="../../tags/SSPR/" style="font-size: 10px;">SSPR</a> <a href="../../tags/Security/" style="font-size: 15.56px;">Security</a> <a href="../../tags/Sgin-in-log/" style="font-size: 10px;">Sgin-in log</a> <a href="../../tags/Smart-lockout/" style="font-size: 10px;">Smart lockout</a> <a href="../../tags/Subscription/" style="font-size: 10px;">Subscription</a> <a href="../../tags/Tenant-Restrictions/" style="font-size: 10px;">Tenant Restrictions</a> <a href="../../tags/Token/" style="font-size: 10px;">Token</a> <a href="../../tags/Troubleshooting/" style="font-size: 10px;">Troubleshooting</a> <a href="../../tags/UPN/" style="font-size: 10px;">UPN</a> <a href="../../tags/Windows-Defender-ATP/" style="font-size: 10px;">Windows Defender ATP</a> <a href="../../tags/Workplace-Join/" style="font-size: 11.11px;">Workplace Join</a> <a href="../../tags/Zero-Trust/" style="font-size: 11.11px;">Zero Trust</a> <a href="../../tags/graph-api/" style="font-size: 12.22px;">graph api</a> <a href="../../tags/signin-log/" style="font-size: 12.22px;">signin log</a> <a href="../../tags/supportMultipleDomain/" style="font-size: 10px;">supportMultipleDomain</a> <a href="../../tags/クレームルール/" style="font-size: 10px;">クレームルール</a> <a href="../../tags/サポート/" style="font-size: 11.11px;">サポート</a> <a href="../../tags/トラブルシューティング/" style="font-size: 13.33px;">トラブルシューティング</a> <a href="../../tags/情報採取/" style="font-size: 11.11px;">情報採取</a> <a href="../../tags/証明書/" style="font-size: 10px;">証明書</a> <a href="../../tags/証明書認証/" style="font-size: 10px;">証明書認証</a>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 Azure Identity Support Japan<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="../../index.html" class="mobile-nav-link">Home</a>
+  
+    <a href="../../archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="../../fancybox/jquery.fancybox.css">
+  <script src="../../fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="../../js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

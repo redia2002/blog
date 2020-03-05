@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  
+  <title>Azure Active Directory の PowerShell モジュール | Japan Azure Identity Support Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="本記事は Technet Blog の更新停止に伴い https://blogs.technet.microsoft.com/jpazureid/2017/12/04/aad-powershell/ の内容を移行したものです。元の記事の最新の更新情報については、本内容をご参照ください。  こんにちは、 Azure ID チームの三浦です。今回は Azure Active Directory (A">
+<meta name="keywords" content="Azure AD,PowerShell">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Azure Active Directory の PowerShell モジュール">
+<meta property="og:url" content="https://jpazureid.github.io/blog/azure-active-directory/powershell-module/index.html">
+<meta property="og:site_name" content="Japan Azure Identity Support Blog">
+<meta property="og:description" content="本記事は Technet Blog の更新停止に伴い https://blogs.technet.microsoft.com/jpazureid/2017/12/04/aad-powershell/ の内容を移行したものです。元の記事の最新の更新情報については、本内容をご参照ください。  こんにちは、 Azure ID チームの三浦です。今回は Azure Active Directory (A">
+<meta property="og:locale" content="ja">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory/powershell-module/powershell-version.jpg">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory/powershell-module/get-installedmodule.jpg">
+<meta property="og:updated_time" content="2020-03-05T03:14:38.409Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Azure Active Directory の PowerShell モジュール">
+<meta name="twitter:description" content="本記事は Technet Blog の更新停止に伴い https://blogs.technet.microsoft.com/jpazureid/2017/12/04/aad-powershell/ の内容を移行したものです。元の記事の最新の更新情報については、本内容をご参照ください。  こんにちは、 Azure ID チームの三浦です。今回は Azure Active Directory (A">
+<meta name="twitter:image" content="https://jpazureid.github.io/blog/azure-active-directory/powershell-module/powershell-version.jpg">
+  
+    <link rel="alternate" href="../../blog/atom.xml" title="Japan Azure Identity Support Blog" type="application/atom+xml">
+  
+
+  <link rel="icon" href="./favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
+  <link rel="manifest" href="./site.webmanifest">
+  <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="theme-color" content="#ffffff">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="site-header-logo"></div>
+  <div id="site-header-blog-wrapper"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="../../index.html">Home</a>
+        
+          <a class="main-nav-link" href="../../archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="../../blog/atom.xml" title="RSSフィード"></a>
+        
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//www.bing.com/search" method="get" accept-charset="UTF-8" name="bing-search" onsubmit="var f=this;if(f['q'].value){var searchUrl =  'https://www.bing.com/search?q=' +  encodeURIComponent(f['q'].value + ' site:' + f['sitesearch'].value) ;window.open(searchUrl, 'blank') };return false;" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="検索"><button type="submit" id="nav-search-btn" class="search-form-submit"></button><input type="hidden" name="sitesearch" value="https://jpazureid.github.io/blog"></form>
+      </div>
+    </div>
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="../../index.html" id="logo">Japan Azure Identity Support Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="../../index.html" id="subtitle">日本マイクロソフトの Azure Active Directory と AD FS に関するサポート情報のブログです。</a>
+        </h2>
+      
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-azure-active-directory/powershell-module" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+    
+      <header class="article-header-single">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Azure Active Directory の PowerShell モジュール
+    </h1>
+  
+
+      </header>
+      <div class="article-share">
+        Last Update: 
+        <a href class="article-date-single">
+  <time datetime="2017-12-03T15:00:00.000Z" itemprop="datePublished">2017-12-04</time>
+</a>
+        
+        
+        <a href="https://github.com/jpazureid/blog/issues/new?title=&body=%0A%0A---%0A%0A%23%23%23%23+Document+Details%0A%0A%E2%9A%A0+*Do+not+edit+this+section.%0A%0A*+ID%3A+3d22f23e-36a6-5dd5-a4c5-9236c5ebb3a5%0A*+%E5%AF%BE%E8%B1%A1%E8%A8%98%E4%BA%8B%3A+%5BAzure+Active+Directory+%E3%81%AE+PowerShell+%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB%5D%28https%3A%2F%2Fjpazureid.github.io%2Fblog%2Fazure-active-directory%2Fpowershell-module%2F%29%0A*+Content+Source%3A+%5Barticles%2Fazure-active-directory%2Fpowershell-module.md%5D%28https%3A%2F%2Fgithub.com%2Fjpazureid%2Fblog%2Fblob%2Fmaster%2Farticles%2Fazure-active-directory%2Fpowershell-module.md%29%0A*+Author%3A+" class="article-github-issue-link" target="_blank" rel="noopener noreferrer">feedback</a>
+        
+        <a data-url="https://jpazureid.github.io/blog/azure-active-directory/powershell-module/" data-id="ck7e6fl6f00674ep68v8w7m3n" class="article-share-link">共有</a>
+      </div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>本記事は Technet Blog の更新停止に伴い <a href="https://blogs.technet.microsoft.com/jpazureid/2017/12/04/aad-powershell/" target="_blank" rel="noopener">https://blogs.technet.microsoft.com/jpazureid/2017/12/04/aad-powershell/</a> の内容を移行したものです。<br>元の記事の最新の更新情報については、本内容をご参照ください。</p>
+</blockquote>
+<p>こんにちは、 Azure ID チームの三浦です。今回は Azure Active Directory (Azure AD) の PowerShell モジュールの種類、インストール方法についてご案内します。</p>
+<p>Azure AD への操作は主に Azure ポータル、 Office 365 ポータル、 Graph API それに今回紹介します PowerShell からおこなうことができます。PowerShell モジュールについても複数ありますので、その種類をまず紹介します。</p>
+<h2 id="Azure-AD-PowerShell-の種類"><a href="#Azure-AD-PowerShell-の種類" class="headerlink" title="Azure AD PowerShell の種類"></a>Azure AD PowerShell の種類</h2><p>Azure AD の PowerShell には次のようなものがあります。</p>
+<h3 id="1-MSOnline-Azure-AD-v1"><a href="#1-MSOnline-Azure-AD-v1" class="headerlink" title="1. MSOnline (Azure AD v1)"></a>1. MSOnline (Azure AD v1)</h3><p>Office 365 をご利用いただいている方にとっては Office 365 のライセンスを割り当てるときにも利用しますので馴染み深いかもしれません。当初からあるもので、あとから紹介する Azure AD v2 と明示的に区別する際に Azure AD v1 モジュールとも呼びます。Connect-Msolservice のようにコマンドレットに ”Msol” という文字列が含まれています。現状でも Azure AD に対する PowerShell コマンドでよく使われています。</p>
+<h3 id="2-Azure-AD-for-Graph-Azure-AD-v2"><a href="#2-Azure-AD-for-Graph-Azure-AD-v2" class="headerlink" title="2. Azure AD for Graph (Azure AD v2)"></a>2. Azure AD for Graph (Azure AD v2)</h3><p>当初は Azure AD は Office 365 の認証基盤という意味合いが大きかったのですが、 Azure AD に新しい機能が追加されることに伴い Azure AD  PowerShell の機能を拡張させていく必要がでてきました。その対応のために従来の MSOnline を拡張するのではなく、別途異なるモジュールを開発するというアプローチを取ることになり Azure AD for Graph (Azure AD v2 と言うほうが一般的なので以降は Azure AD v2 とします) というモジュールが作成されました。基本的には MSOnline で提供していた機能は Azure AD v2 でも提供されます。例えばユーザー作成をおこなうときに MSOnline モジュールでは <a href="https://docs.microsoft.com/en-us/powershell/module/msonline/new-msoluser?view=azureadps-1.0" target="_blank" rel="noopener">New-Msoluser</a> というコマンドを使いますが、Azure AD v2 では <a href="https://docs.microsoft.com/ja-jp/powershell/azure/active-directory/new-user-sample?view=azureadps-2.0" target="_blank" rel="noopener">New-AzureADUser</a> を利用します。基本的に MSOL コマンドレットの拡張は予定されていないため、新しい機能などは Azure AD v2 のみで提供されます。というわけで今後は基本的に Azure AD v2 コマンドをご利用くださいと案内したいところなのですが、、、完全に MSOL コマンドで提供していたものをカバーしているわけではないため、残念なのですが (大変申し訳ないのですが)、従来の MSOL コマンドも併用していく必要があります。</p>
+<h3 id="3-Azure-AD-for-Graph-preview-Azure-AD-v2-preview"><a href="#3-Azure-AD-for-Graph-preview-Azure-AD-v2-preview" class="headerlink" title="3. Azure AD for Graph preview (Azure AD v2 preview)"></a>3. Azure AD for Graph preview (Azure AD v2 preview)</h3><p>Azure AD v2 モジュールはかなり早いスピードで新しいコマンドが追加されています。なるべく早く新しいモジュールを提供できるようプレビュー版も用意しています。プレビュー版については実際の運用環境での利用は推奨していませんが、Public Preview 中の機能を利用するためにはプレビュー版を利用する必要があることが多くあります。また、 Azure AD v2 の通常版 = General Availability 版がすでにインストールされている環境で通常版とプレビュー版を併用することはできません。 Preview 版を利用したい場合には、先に通常版を Uninstall-Module コマンドでアンインストールしたうえでプレビュー版をインストールをします。</p>
+<h2 id="インストール方法について"><a href="#インストール方法について" class="headerlink" title="インストール方法について"></a>インストール方法について</h2><h3 id="前提条件"><a href="#前提条件" class="headerlink" title="前提条件"></a>前提条件</h3><p>MSOnline (Azure AD v1) と Azure AD v2 では前提となる .net Framework のバージョンが厳密には異なり、 MSOnline の場合には必ずしも必要にはならないのですが、古いものを利用していると問題が生じることがあるので、 Azure AD v1、 v2 を問わず、以下の前提条件を満たすようにしてください。なお、 Windows 10 / Windows Server 2016 は .NET Framework、 PowerShell の要件を既定で満たしていますので前提条件については考慮不要です。</p>
+<ul>
+<li>.NET Framework: バージョン 4.5.2 以降 (*1)</li>
+<li>PowerShell: バージョン 5.0 以降 (*1)</li>
+<li>OS: Windows 7 SP1 (*2)、 Windows Server 2008 R2 以降</li>
+</ul>
+<blockquote>
+<ol>
+<li>.NET Framework および PowerShell のバージョンについては、厳密に言うとこれを満たしていなくても動作するバージョンもありますが、古いバージョンだと問題が生じることがあるため上記を満たすようにします。</li>
+<li>クライアント OS で利用する場合には 32 bit 環境ではなく 64 bit 環境の必要があります。</li>
+</ol>
+</blockquote>
+<p>.NET Framework と PowerShell のインストール方法、現在インストールされているバージョンの確認方法は次の通りです。</p>
+<h3 id="NET-Framework"><a href="#NET-Framework" class="headerlink" title=".NET Framework"></a>.NET Framework</h3><p>以下のサイトから .NET Framework 4.6 をインストールします。</p>
+<p>Microsoft .NET Framework 4.6<br><a href="https://www.microsoft.com/ja-jp/download/details.aspx?id=48137" target="_blank" rel="noopener">https://www.microsoft.com/ja-jp/download/details.aspx?id=48137</a></p>
+<p>インストールを試みたときにすでにインストールされているという旨のメッセージが表示された場合にはすでにインストールされていますので不要です。実際にインストール ウィザードを実行していなくとも .NET Framework でどのバージョンがインストールされているかは、 PowerShell のウィンドウを開き、次のコマンドを実行することで確認できます。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-ChildItem</span> <span class="string">'HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP'</span> -recurse | <span class="built_in">Get-ItemProperty</span> -name Version,Release -EA <span class="number">0</span> | Where &#123; <span class="variable">$_</span>.PSChildName <span class="nomarkup">-match</span> <span class="string">'^(?!S)\p&#123;L&#125;'</span>&#125; | Select PSChildName, Version, Release</span><br></pre></td></tr></table></figure>
+
+<p>以下の例では 4.7.02046 という新しいバージョンがインストールされていることが確認できます (4.7 のバージョンは OS によっては追加のモジュールのインストールが必要なのでここでは 4.6 の紹介にしていますが、もちろん 4.7 のインストールで構いません)。</p>
+
+
+<h3 id="PowerShell-モジュール"><a href="#PowerShell-モジュール" class="headerlink" title="PowerShell モジュール"></a>PowerShell モジュール</h3><p>PowerShell のバージョンを 5.0 以上にするために Windows Management Framework (WMF) 5.1 を以下のサイトからダウンロードしてインストールします。</p>
+<p>Windows Management Framework 5.1<br><a href="https://www.microsoft.com/en-us/download/details.aspx?id=54616" target="_blank" rel="noopener">https://www.microsoft.com/en-us/download/details.aspx?id=54616</a></p>
+<p>システムの PowerShell のバージョンは $psversiontable で確認できます。以下の例だと 5.1.15063.726 というバージョンがインストールされていることが確認できます。</p>
+<img src="/blog/azure-active-directory/powershell-module/powershell-version.jpg">
+
+<h3 id="Azure-AD-PowerShell-インストール方法"><a href="#Azure-AD-PowerShell-インストール方法" class="headerlink" title="Azure AD PowerShell インストール方法"></a>Azure AD PowerShell インストール方法</h3><p>上記の前提条件を満たしたうえで、次の手順でインストールを実施します。</p>
+<ol>
+<li><p>管理者で PowerShell を起動します。</p>
+</li>
+<li><p>下記のコマンドを実行し、モジュールをダウンロードし、インストールします。</p>
+<p> MSOnline (Azure AD v1):</p>
+ <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Install-Module</span> -Name MSOnline</span><br></pre></td></tr></table></figure>
+
+<p> Azure AD for Graph (Azure AD v2):</p>
+ <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Install-Module</span> -Name AzureAD</span><br></pre></td></tr></table></figure>
+
+<p> Azure AD for Graph preview (Azure AD v2 preview):</p>
+ <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Install-Module</span> -Name AzureADPreview</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<blockquote>
+<p>Azure AD v2 と Azure AD v2 preview の両方を同じコンピューターにインストールできませんのでご注意ください。Azure AD Preview が必要にも関わらず Install-Module -Name AzureAD を実行してインストールした場合には、一度 Uninstall-Module -Name AzureAD を実行してアンインストールの上で Install-Module -Name AzureADPreview を実行します。</p>
+</blockquote>
+<blockquote>
+<p>NuGet プロバイダーが必要というメッセージが表示された場合には Y をクリックして進めます。信頼されていないレポジトリのメッセージが表示された場合にも Y をクリックして進めます。それぞれの次のようなメッセージが表示されます。</p>
+</blockquote>
+<p>NuGet のメッセージ:</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">NuGet provider is required to <span class="keyword">continue</span></span><br><span class="line">PowerShellGet requires NuGet provider version <span class="string">'2.8.5.201'</span> or newer to interact with NuGet-based repositories. The NuGet</span><br><span class="line">provider must be available <span class="keyword">in</span> <span class="string">'C:\Program Files\PackageManagement\ProviderAssemblies'</span> or</span><br><span class="line"><span class="string">'C:\Users\taguiadmin\AppData\Local\PackageManagement\ProviderAssemblies'</span>. You can also install the NuGet provider by</span><br><span class="line">running <span class="string">'Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force'</span>. <span class="keyword">Do</span> you want PowerShellGet to install</span><br><span class="line">and import the NuGet provider now?</span><br><span class="line">[Y] Yes  [N] No  [S] Suspend  [?] Help (default is <span class="string">"Y"</span>):</span><br></pre></td></tr></table></figure>
+
+<p>レポジトリのメッセージ:</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Untrusted repository</span><br><span class="line">You are installing the modules from an untrusted repository. <span class="keyword">If</span> you trust this repository, change its</span><br><span class="line">InstallationPolicy value by running the <span class="built_in">Set-PSRepository</span> cmdlet. Are you sure you want to install the modules from</span><br><span class="line"><span class="string">'PSGallery'</span>?</span><br><span class="line">[Y] Yes  [A] Yes to All  [N] No  [L] No to All  [S] Suspend  [?] Help (default is <span class="string">"N"</span>):</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>明示的にバージョン番号を指定する場合にはコマンドに -RequiredVersion 2.0.0.137 というように引数としてバージョン情報を追加します。</p>
+</blockquote>
+<blockquote>
+<p>MSOnline については以前は Connect サイトからインストールパッケージをダウンロードできましたが、サイトのリタイアに伴いダウンロード パッケージは提供されなくなりました。Install-Module コマンドを実行することでインストールします。</p>
+</blockquote>
+<h2 id="補足事項"><a href="#補足事項" class="headerlink" title="補足事項"></a>補足事項</h2><p>&lt;別端末で保存したファイルを利用したい場合&gt;</p>
+<p>何らかの理由で直接 Install-Module を実行してのインストールができないケースが稀にあります (ウイルス対策ソフトの影響等)。この場合には、他の端末で必要なモジュールを取得し、入手したファイルを元に Import-Module を実行する方法もあります (あまり多くの実績があるものではないため、基本は Install-Module での対応をお勧めします)。以下は Azure AD for Graph の例です。</p>
+<ol>
+<li><p>管理者として PowerShell を起動します。</p>
+</li>
+<li><p>下記のコマンドレットを実行し、リポジトリ ファイル群をダウンロードします。</p>
+ <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Save-Module</span> -Name AzureAD -Path C:\temp\</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<blockquote>
+<p>C:\temp\ は保存先フォルダーの指定となりますので、任意の存在するパス/フォルダーをご指定ください。</p>
+</blockquote>
+<ol start="3">
+<li><p>指定したフォルダー配下の \AzureAD&lt;バージョン番号&gt;\ フォルダー配下に、リポジトリ ファイル群が展開されたことを確認します。</p>
+</li>
+<li><p>実際に Azure AD の PowerShell コマンドを利用したい端末の C:\Program Files\WindowsPowerShell\Modules フォルダーに 2 でダウンロードしたフォルダー (今回の例の場合 c:\temp 配下の AzureAD フォルダー) をコピーします。</p>
+</li>
+<li><p>C:\Program Files\WindowsPowerShell\Modules フォルダーに保存されたモジュールは PowerShell で自動的にロードされるため、そのまま実行ができるはずですが、コマンドがエラーになる場合には、以下を実行したうえで Connect-AzureAD  などを実行します。</p>
+ <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Import-Module</span> C:\Program Files\WindowsPowerShell\Modules\AzureAD\&lt;バージョン番号&gt;\AzureAD.psd1</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>&lt;認証プロキシが存在する場合の注意事項&gt;</p>
+<p>インターネットにアクセスする際に認証が必要なプロキシが存在するようなネットワーク環境では、 PowerShell 起動時に以下のコマンドを実行し、認証が必要なプロキシを経由してアクセスができるようにします。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ProxyCredential</span> = <span class="built_in">New-Object</span> System.Net.NetworkCredential(<span class="string">"ユーザー名"</span>,<span class="string">"パスワード"</span>)</span><br><span class="line">[System.Net.WebRequest]::DefaultWebProxy.Credentials = <span class="variable">$ProxyCredential</span></span><br></pre></td></tr></table></figure>
+
+<p>&lt;モジュールがインストールされているかの確認&gt;</p>
+<p>モジュールがインストールされているかは Get-InstalledModule コマンドで確認できます。</p>
+<img src="/blog/azure-active-directory/powershell-module/get-installedmodule.jpg">
+
+<p>&lt;モジュールのアンインストール方法&gt;</p>
+<p>Uninstall-Module コマンドでアンインストールができます。Azure AD v2 の通常版と Preview 版は併用できませんので、通常版を利用している環境で Preview 版を利用したい場合には管理者で PowerShell を起動し、 Preview 版をインストール前に次のコマンドで通常版のアンインストールが必要です。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Uninstall-Module</span> AzureAD</span><br></pre></td></tr></table></figure>
+
+<p>以上です。最後に参考資料をご紹介します。</p>
+<h2 id="参考資料"><a href="#参考資料" class="headerlink" title="参考資料"></a>参考資料</h2><p>Azure Active Directory PowerShell for Graph<br><a href="https://docs.microsoft.com/ja-jp/powershell/azure/active-directory/install-adv2?view=azureadps-2.0" target="_blank" rel="noopener">https://docs.microsoft.com/ja-jp/powershell/azure/active-directory/install-adv2?view=azureadps-2.0</a></p>
+<!-- textlint-disable -->
+<p>Azure​AD (Azure AD v2 コマンド一覧)  </p>
+<!-- textlint-enable -->
+<p><a href="https://docs.microsoft.com/en-us/powershell/azuread/v2/azureactivedirectory" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/powershell/azuread/v2/azureactivedirectory</a></p>
+<p>AzureAD PowerShell’s Profile (Azure AD PowerShell 最新版リスト。 V1、 V2、 V2Preview)<br><a href="https://www.powershellgallery.com/profiles/AzureADPowerShell/" target="_blank" rel="noopener">https://www.powershellgallery.com/profiles/AzureADPowerShell/</a></p>
+<h2 id="変更履歴"><a href="#変更履歴" class="headerlink" title="変更履歴"></a>変更履歴</h2><ul>
+<li>2017/12/04: 公開しました。</li>
+<li>2017/12/20: 前提条件について追記を行いました。</li>
+<li>2018/01/31: Microsoft Connect のリタイアに伴い MSOnline モジュールのダウンロードができなくなったため追記しました。また、インストール時の手順として Save-Module は必要がありませんが、補足事項として別項を追加しました。</li>
+<li>2018/02/08: Windows 10/2016 では前提条件を既定で満たしていることを追記しました。モジュールインストール時に表示される可能性があるメッセージを掲載しました。TLS 1.2 への対応などを考慮すると 4.6 のほうが望ましいため .NET Framework のダウンロードリンクを 4.6 のものに変更しました。</li>
+<li>2018/05/10: モジュールがインストールされているかの確認方法とアンインストール コマンドを追記しました。</li>
+<li>2018/07/13: Windows Management Framework 5.0 のリンクを 5.1 に変更しました。</li>
+<li>2018/08/07: Save-Module で別端末でダウンロードしたモジュールを利用する際の手順を更新しました。</li>
+<li>2018/10/17: Windows Management Framework (WMF) のサポート対象が 5.1 であることから .NET Framework の前提条件を WMF 5.1 インストールに必要となる 4.5.2 に変更しました。</li>
+<li>2019/01/23: Azure AD v2 と Azure AD v2 preview が同時インストールできない注意書きをインストールの項目にも追記しました。</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../tags/Azure-AD/">Azure AD</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../tags/PowerShell/">PowerShell</a></li></ul>
+
+        
+        <a href="https://github.com/jpazureid/blog/edit/master/articles/azure-active-directory/powershell-module.md" class="article-github-edit-link" target="_blank" rel="noopener noreferrer">GitHub で編集</a>
+        
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="../what-is-b2b/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">次の記事</strong>
+      <div class="article-nav-title">
+        
+          Azure AD B2B とは
+        
+      </div>
+    </a>
+  
+  
+    <a href="../azuread-b2b-troubleshooting/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前の記事</strong>
+      <div class="article-nav-title">招待したユーザーが利用できない</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最近の投稿</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../3-ways-aad-ca-balances-security-and-productivity/">Azure AD 条件付きアクセスを利用してセキュリティと生産性のバランスをとる 3 つの方法</a>
+          </li>
+        
+          <li>
+            <a href="../../active-directory-federation-service/adfs-AADSTS50107/">AADSTS50107 The requested federation realm object &#39;xxx&#39; does not exist. (Issuer ID/Issuer URI と SupportMultipleDomain)</a>
+          </li>
+        
+          <li>
+            <a href="../5-identity-priorities-for-2020/">2020 年アイデンティティについて取り組むべき 5 つのポイント</a>
+          </li>
+        
+          <li>
+            <a href="../microsoft-graph-api-signin-activity-reports-v2/">マネージド ID を利用して Azure AD サインイン アクティビティ レポートを CSV ファイルで取得する PowerShell スクリプト</a>
+          </li>
+        
+          <li>
+            <a href="../troubleshoot-hybrid-azure-ad-join-managed/">Hybrid Azure AD Join 失敗時の初動調査方法について (マネージド編)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">タグ</h3>
+    <div class="widget">
+      <!-- <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AAD-Connect/">AAD Connect</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AADSTS50107/">AADSTS50107</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AD-FS/">AD FS</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AD-Sync/">AD Sync</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/ADSync/">ADSync</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Application/">Application</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD/">Azure AD</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-Application-Proxy/">Azure AD Application Proxy</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-B2B/">Azure AD B2B</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-Connect/">Azure AD Connect</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-Directory-Rolls/">Azure AD Directory Rolls</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-License/">Azure AD License</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-Active-Directory/">Azure Active Directory</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/CBA/">CBA</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Conditional-Access/">Conditional Access</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Device/">Device</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/DirSync/">DirSync</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/ExpressRoute/">ExpressRoute</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Federated-Domain/">Federated Domain</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Hard-match/">Hard match</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Hybrid-Azure-AD-Join/">Hybrid Azure AD Join</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Intune/">Intune</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Issuer-ID/">Issuer ID</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Issuer-URI/">Issuer URI</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/MFA/">MFA</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Managed-Domain/">Managed Domain</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Managed-ID/">Managed ID</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/OAuth/">OAuth</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/PRT/">PRT</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/PowerShell/">PowerShell</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Primary-Refresh-Token/">Primary Refresh Token</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/RBAC/">RBAC</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/SSO/">SSO</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/SSPR/">SSPR</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Security/">Security</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Sgin-in-log/">Sgin-in log</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Smart-lockout/">Smart lockout</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Subscription/">Subscription</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Tenant-Restrictions/">Tenant Restrictions</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Token/">Token</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Troubleshooting/">Troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/UPN/">UPN</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Windows-Defender-ATP/">Windows Defender ATP</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Workplace-Join/">Workplace Join</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Zero-Trust/">Zero Trust</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/graph-api/">graph api</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/signin-log/">signin log</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/supportMultipleDomain/">supportMultipleDomain</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/クレームルール/">クレームルール</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/サポート/">サポート</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/トラブルシューティング/">トラブルシューティング</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/情報採取/">情報採取</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/証明書/">証明書</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/証明書認証/">証明書認証</a></li></ul> -->
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AD-FS/">AD FS</a><span class="tag-list-count">16</span><ul><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/AADSTS50107">AADSTS50107</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Azure-AD">Azure AD</a><span class="tag-list-count">4</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Azure-AD-Connect">Azure AD Connect</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/CBA">CBA</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Conditional-Access">Conditional Access</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Federated-Domain">Federated Domain</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Hybrid-Azure-AD-Join">Hybrid Azure AD Join</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Intune">Intune</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Issuer-ID">Issuer ID</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Issuer-URI">Issuer URI</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/MFA">MFA</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Security">Security</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Smart-lockout">Smart lockout</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Workplace-Join">Workplace Join</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/supportMultipleDomain">supportMultipleDomain</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/クレームルール">クレームルール</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/トラブルシューティング">トラブルシューティング</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/証明書">証明書</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/証明書認証">証明書認証</a><span class="tag-list-count">1</span></li></ul></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AAD-Connect/">AAD Connect</a><span class="tag-list-count">22</span><ul><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/AD-Sync">AD Sync</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/ADSync">ADSync</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/Azure-AD">Azure AD</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/Azure-Active-Directory">Azure Active Directory</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/DirSync">DirSync</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/Hard-match">Hard match</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/SSO">SSO</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/UPN">UPN</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/サポート">サポート</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/情報採取">情報採取</a><span class="tag-list-count">2</span></li></ul></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/情報採取/">情報採取</a><span class="tag-list-count">2</span><ul><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/情報採取/AAD-Connect">AAD Connect</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/情報採取/サポート">サポート</a><span class="tag-list-count">2</span></li></ul></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD/">Azure AD</a><span class="tag-list-count">55</span><ul><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/AAD-Connect">AAD Connect</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/AD-FS">AD FS</a><span class="tag-list-count">4</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Application">Application</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Azure-AD-Application-Proxy">Azure AD Application Proxy</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Azure-AD-B2B">Azure AD B2B</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Azure-AD-Connect">Azure AD Connect</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Conditional-Access">Conditional Access</a><span class="tag-list-count">8</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Device">Device</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/ExpressRoute">ExpressRoute</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Federated-Domain">Federated Domain</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Hybrid-Azure-AD-Join">Hybrid Azure AD Join</a><span class="tag-list-count">5</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Intune">Intune</a><span class="tag-list-count">3</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/MFA">MFA</a><span class="tag-list-count">3</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Managed-Domain">Managed Domain</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Managed-ID">Managed ID</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/OAuth">OAuth</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/PRT">PRT</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/PowerShell">PowerShell</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Primary-Refresh-Token">Primary Refresh Token</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/RBAC">RBAC</a><span class="tag-list-count">2</span></li></ul></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">アーカイブ</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2020/03/">2020 / 03</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2020/02/">2020 / 02</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2020/01/">2020 / 01</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/12/">2019 / 12</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/11/">2019 / 11</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/10/">2019 / 10</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/09/">2019 / 09</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/07/">2019 / 07</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/05/">2019 / 05</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/02/">2019 / 02</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/12/">2018 / 12</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/11/">2018 / 11</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/10/">2018 / 10</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/09/">2018 / 09</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/08/">2018 / 08</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/07/">2018 / 07</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/06/">2018 / 06</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/05/">2018 / 05</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/04/">2018 / 04</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/03/">2018 / 03</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/02/">2018 / 02</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/01/">2018 / 01</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2017/12/">2017 / 12</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2017/11/">2017 / 11</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2017/10/">2017 / 10</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2017/06/">2017 / 06</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">タグクラウド</h3>
+    <div class="widget tagcloud">
+      <a href="../../tags/AAD-Connect/" style="font-size: 18.89px;">AAD Connect</a> <a href="../../tags/AADSTS50107/" style="font-size: 10px;">AADSTS50107</a> <a href="../../tags/AD-FS/" style="font-size: 17.78px;">AD FS</a> <a href="../../tags/AD-Sync/" style="font-size: 10px;">AD Sync</a> <a href="../../tags/ADSync/" style="font-size: 10px;">ADSync</a> <a href="../../tags/Application/" style="font-size: 10px;">Application</a> <a href="../../tags/Azure-AD/" style="font-size: 20px;">Azure AD</a> <a href="../../tags/Azure-AD-Application-Proxy/" style="font-size: 10px;">Azure AD Application Proxy</a> <a href="../../tags/Azure-AD-B2B/" style="font-size: 13.33px;">Azure AD B2B</a> <a href="../../tags/Azure-AD-Connect/" style="font-size: 11.11px;">Azure AD Connect</a> <a href="../../tags/Azure-AD-Directory-Rolls/" style="font-size: 10px;">Azure AD Directory Rolls</a> <a href="../../tags/Azure-AD-License/" style="font-size: 10px;">Azure AD License</a> <a href="../../tags/Azure-Active-Directory/" style="font-size: 10px;">Azure Active Directory</a> <a href="../../tags/CBA/" style="font-size: 10px;">CBA</a> <a href="../../tags/Conditional-Access/" style="font-size: 16.67px;">Conditional Access</a> <a href="../../tags/Device/" style="font-size: 10px;">Device</a> <a href="../../tags/DirSync/" style="font-size: 10px;">DirSync</a> <a href="../../tags/ExpressRoute/" style="font-size: 10px;">ExpressRoute</a> <a href="../../tags/Federated-Domain/" style="font-size: 10px;">Federated Domain</a> <a href="../../tags/Hard-match/" style="font-size: 10px;">Hard match</a> <a href="../../tags/Hybrid-Azure-AD-Join/" style="font-size: 14.44px;">Hybrid Azure AD Join</a> <a href="../../tags/Intune/" style="font-size: 12.22px;">Intune</a> <a href="../../tags/Issuer-ID/" style="font-size: 10px;">Issuer ID</a> <a href="../../tags/Issuer-URI/" style="font-size: 10px;">Issuer URI</a> <a href="../../tags/MFA/" style="font-size: 12.22px;">MFA</a> <a href="../../tags/Managed-Domain/" style="font-size: 10px;">Managed Domain</a> <a href="../../tags/Managed-ID/" style="font-size: 10px;">Managed ID</a> <a href="../../tags/OAuth/" style="font-size: 10px;">OAuth</a> <a href="../../tags/PRT/" style="font-size: 10px;">PRT</a> <a href="../../tags/PowerShell/" style="font-size: 11.11px;">PowerShell</a> <a href="../../tags/Primary-Refresh-Token/" style="font-size: 10px;">Primary Refresh Token</a> <a href="../../tags/RBAC/" style="font-size: 11.11px;">RBAC</a> <a href="../../tags/SSO/" style="font-size: 10px;">SSO</a> <a href="../../tags/SSPR/" style="font-size: 10px;">SSPR</a> <a href="../../tags/Security/" style="font-size: 15.56px;">Security</a> <a href="../../tags/Sgin-in-log/" style="font-size: 10px;">Sgin-in log</a> <a href="../../tags/Smart-lockout/" style="font-size: 10px;">Smart lockout</a> <a href="../../tags/Subscription/" style="font-size: 10px;">Subscription</a> <a href="../../tags/Tenant-Restrictions/" style="font-size: 10px;">Tenant Restrictions</a> <a href="../../tags/Token/" style="font-size: 10px;">Token</a> <a href="../../tags/Troubleshooting/" style="font-size: 10px;">Troubleshooting</a> <a href="../../tags/UPN/" style="font-size: 10px;">UPN</a> <a href="../../tags/Windows-Defender-ATP/" style="font-size: 10px;">Windows Defender ATP</a> <a href="../../tags/Workplace-Join/" style="font-size: 11.11px;">Workplace Join</a> <a href="../../tags/Zero-Trust/" style="font-size: 11.11px;">Zero Trust</a> <a href="../../tags/graph-api/" style="font-size: 12.22px;">graph api</a> <a href="../../tags/signin-log/" style="font-size: 12.22px;">signin log</a> <a href="../../tags/supportMultipleDomain/" style="font-size: 10px;">supportMultipleDomain</a> <a href="../../tags/クレームルール/" style="font-size: 10px;">クレームルール</a> <a href="../../tags/サポート/" style="font-size: 11.11px;">サポート</a> <a href="../../tags/トラブルシューティング/" style="font-size: 13.33px;">トラブルシューティング</a> <a href="../../tags/情報採取/" style="font-size: 11.11px;">情報採取</a> <a href="../../tags/証明書/" style="font-size: 10px;">証明書</a> <a href="../../tags/証明書認証/" style="font-size: 10px;">証明書認証</a>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 Azure Identity Support Japan<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="../../index.html" class="mobile-nav-link">Home</a>
+  
+    <a href="../../archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="../../fancybox/jquery.fancybox.css">
+  <script src="../../fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="../../js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

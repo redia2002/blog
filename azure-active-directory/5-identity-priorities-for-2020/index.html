@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  
+  <title>2020 年アイデンティティについて取り組むべき 5 つのポイント | Japan Azure Identity Support Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="本記事は、 2020 年 1 月 28 日に Azure Active Directory Identity Blog に公開された記事 (5 identity priorities for 2020 - preparing for what’s next) を翻訳したものです。原文は こちら より参照ください。  Microsoft アイデンティティ グループの慣習として、毎年、顧客との共同イ">
+<meta name="keywords" content="Azure AD,Security,Zero Trust">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2020 年アイデンティティについて取り組むべき 5 つのポイント">
+<meta property="og:url" content="https://jpazureid.github.io/blog/azure-active-directory/5-identity-priorities-for-2020/index.html">
+<meta property="og:site_name" content="Japan Azure Identity Support Blog">
+<meta property="og:description" content="本記事は、 2020 年 1 月 28 日に Azure Active Directory Identity Blog に公開された記事 (5 identity priorities for 2020 - preparing for what’s next) を翻訳したものです。原文は こちら より参照ください。  Microsoft アイデンティティ グループの慣習として、毎年、顧客との共同イ">
+<meta property="og:locale" content="ja">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory/5-identity-priorities-for-2020/figure1.png">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory/5-identity-priorities-for-2020/figure2.png">
+<meta property="og:updated_time" content="2020-03-05T03:14:38.285Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="2020 年アイデンティティについて取り組むべき 5 つのポイント">
+<meta name="twitter:description" content="本記事は、 2020 年 1 月 28 日に Azure Active Directory Identity Blog に公開された記事 (5 identity priorities for 2020 - preparing for what’s next) を翻訳したものです。原文は こちら より参照ください。  Microsoft アイデンティティ グループの慣習として、毎年、顧客との共同イ">
+<meta name="twitter:image" content="https://jpazureid.github.io/blog/azure-active-directory/5-identity-priorities-for-2020/figure1.png">
+  
+    <link rel="alternate" href="../../blog/atom.xml" title="Japan Azure Identity Support Blog" type="application/atom+xml">
+  
+
+  <link rel="icon" href="./favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
+  <link rel="manifest" href="./site.webmanifest">
+  <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="theme-color" content="#ffffff">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="site-header-logo"></div>
+  <div id="site-header-blog-wrapper"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="../../index.html">Home</a>
+        
+          <a class="main-nav-link" href="../../archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="../../blog/atom.xml" title="RSSフィード"></a>
+        
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//www.bing.com/search" method="get" accept-charset="UTF-8" name="bing-search" onsubmit="var f=this;if(f['q'].value){var searchUrl =  'https://www.bing.com/search?q=' +  encodeURIComponent(f['q'].value + ' site:' + f['sitesearch'].value) ;window.open(searchUrl, 'blank') };return false;" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="検索"><button type="submit" id="nav-search-btn" class="search-form-submit"></button><input type="hidden" name="sitesearch" value="https://jpazureid.github.io/blog"></form>
+      </div>
+    </div>
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="../../index.html" id="logo">Japan Azure Identity Support Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="../../index.html" id="subtitle">日本マイクロソフトの Azure Active Directory と AD FS に関するサポート情報のブログです。</a>
+        </h2>
+      
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-azure-active-directory/5-identity-priorities-for-2020" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+    
+      <header class="article-header-single">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      2020 年アイデンティティについて取り組むべき 5 つのポイント
+    </h1>
+  
+
+      </header>
+      <div class="article-share">
+        Last Update: 
+        <a href class="article-date-single">
+  <time datetime="2020-02-12T15:00:00.000Z" itemprop="datePublished">2020-02-13</time>
+</a>
+        
+        
+        <a href="https://github.com/jpazureid/blog/issues/new?title=&body=%0A%0A---%0A%0A%23%23%23%23+Document+Details%0A%0A%E2%9A%A0+*Do+not+edit+this+section.%0A%0A*+ID%3A+79de67c5-ae8c-54f0-9ca3-e20e0617052f%0A*+%E5%AF%BE%E8%B1%A1%E8%A8%98%E4%BA%8B%3A+%5B2020+%E5%B9%B4%E3%82%A2%E3%82%A4%E3%83%87%E3%83%B3%E3%83%86%E3%82%A3%E3%83%86%E3%82%A3%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6%E5%8F%96%E3%82%8A%E7%B5%84%E3%82%80%E3%81%B9%E3%81%8D+5+%E3%81%A4%E3%81%AE%E3%83%9D%E3%82%A4%E3%83%B3%E3%83%88%5D%28https%3A%2F%2Fjpazureid.github.io%2Fblog%2Fazure-active-directory%2F5-identity-priorities-for-2020%2F%29%0A*+Content+Source%3A+%5Barticles%2Fazure-active-directory%2F5-identity-priorities-for-2020.md%5D%28https%3A%2F%2Fgithub.com%2Fjpazureid%2Fblog%2Fblob%2Fmaster%2Farticles%2Fazure-active-directory%2F5-identity-priorities-for-2020.md%29%0A*+Author%3A+" class="article-github-issue-link" target="_blank" rel="noopener noreferrer">feedback</a>
+        
+        <a data-url="https://jpazureid.github.io/blog/azure-active-directory/5-identity-priorities-for-2020/" data-id="ck7e6fl7r00874ep6m05j9i10" class="article-share-link">共有</a>
+      </div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>本記事は、 2020 年 1 月 28 日に Azure Active Directory Identity Blog に公開された記事 (5 identity priorities for 2020 - preparing for what’s next) を翻訳したものです。原文は <a href="https://techcommunity.microsoft.com/t5/azure-active-directory-identity/5-identity-priorities-for-2020-preparing-for-what-s-next/ba-p/1131492" target="_blank" rel="noopener">こちら</a> より参照ください。</p>
+</blockquote>
+<p>Microsoft アイデンティティ グループの慣習として、毎年、顧客との共同イノベーション週間というものを開催しています。次の新しい 10 年で最初のイベントを始めるにあたり、2020 年またさらにその先を見据え、常に念頭にあるのは、私たちの戦略と製品の方向性を形作るお客様の優先事項がどのようのように進化していくのかという点です。</p>
+<p>過去の 10 年間を振り返ってみると、デジタル トランスフォーメーションが人々の働き方や企業のビジネスのあり方を大きく変えてきたのは驚くべきことです。 ユーザーを例に見てみましょう。 かつての “ユーザー” とは従業員を意味していましたが、現在のユーザーにはパートナー、顧客さらにはソフトウェア ボットやデバイスも含まれています。アイデンティティ (ID) は従業員を表すものとして始まりましたが、今やすべての人やモノがアイデンティティで表されています。 企業のネットワーク境界がなくなり、アイデンティティは、すべてのユーザーとデジタル リソースに効果的なアクセス制御を提供するセキュリティの制御インターフェイスになりました。</p>
+<img src="/blog/azure-active-directory/5-identity-priorities-for-2020/figure1.png">
+
+<p>アイデンティティは、お客様のビジネスの成功にとって、絶対的に重要なものとなります。アイデンティティは、セキュリティの中核であるだけでなく、ビジネス変革の中心でもあります。そのため、2020 年に優先すべき 5 つの領域と、今後に備え注目すべき技術を共有したいと思います。 これらの優先事項は、お客様と緊密に協力し、デジタル トランスフォーメーションとしてお客様環境を再構築する際に行った多くの会話に基づいたものです。</p>
+<h2 id="2020-年-5-つのアイデンティティ優先ポイント"><a href="#2020-年-5-つのアイデンティティ優先ポイント" class="headerlink" title="2020 年 5 つのアイデンティティ優先ポイント"></a>2020 年 5 つのアイデンティティ優先ポイント</h2><h3 id="1-すべてのアプリケーションとクラウド-リソースを接続して、アクセス制御とユーザー体験を改善する。"><a href="#1-すべてのアプリケーションとクラウド-リソースを接続して、アクセス制御とユーザー体験を改善する。" class="headerlink" title="1.  すべてのアプリケーションとクラウド リソースを接続して、アクセス制御とユーザー体験を改善する。"></a>1.  すべてのアプリケーションとクラウド リソースを接続して、アクセス制御とユーザー体験を改善する。</h3><p>デジタル ネイティブ世代が労働人口に加わり、今も増え続けています。彼ら/彼女らは、アプリを使い、どこからでも様々なプロジェクトでコラボレーションすることを当たり前に考えており、しかもアプリには何度もサインインしたくないと思っています。一般的な SaaS アプリケーションから <a href="https://azure.microsoft.com/en-us/services/active-directory/sso/secure-hybrid-access/" target="_blank" rel="noopener">オンプレミス アプリケーション</a> や <a href="https://techcommunity.microsoft.com/t5/azure-active-directory-identity/azure-ad-authentication-to-windows-vms-in-azure-now-in-public/ba-p/827840" target="_blank" rel="noopener">クラウド リソース</a> に至る <a href="https://azure.microsoft.com/en-us/services/active-directory/sso/" target="_blank" rel="noopener">すべてのアプリケーションを単一のクラウド アイデンティティ サービスで接続する</a> ことは、ユーザーにシングル サインオン (SSO) の体験を提供するだけでなく、セキュリティも向上させます。</p>
+<p>Azure Activity Directory (Azure AD) をすべてのアプリケーションの単一の制御インターフェイスとして使用すると、デジタル資産全体にわたって可視性と適応性を兼ねたきめ細かなアクセス制御を実現できます。また、当社のクラウド規模の機械学習アルゴリズムが毎日処理する 171 テラ バイトものデータを活用して、各ユーザーとアプリケーションの行動パターンを学習し、潜在的な攻撃にフラグを立て、回復させることが可能です。例えば、<a href="https://techcommunity.microsoft.com/t5/azure-active-directory-identity/the-refreshed-azure-ad-identity-protection-is-now-generally/ba-p/1002916" target="_blank" rel="noopener">危険にさらされている可能性のあるユーザー</a> を保護するために、強制パスワード リセットなどのシンプルなポリシーを適用でき、ユーザーの混乱を最小限に抑えながら ID の侵害を防ぐことが可能です。</p>
+<h3 id="2-アプリケーションにアイデンティティを統合し、セキュリティを改善できるようにアプリ開発者を支援する。"><a href="#2-アプリケーションにアイデンティティを統合し、セキュリティを改善できるようにアプリ開発者を支援する。" class="headerlink" title="2. アプリケーションにアイデンティティを統合し、セキュリティを改善できるようにアプリ開発者を支援する。"></a>2. アプリケーションにアイデンティティを統合し、セキュリティを改善できるようにアプリ開発者を支援する。</h3><p>多くの組織では、複雑なセキュリティとプライバシーの要件を必要とするアプリケーションが爆発的に増えたことで、その対応を進めています。Azure AD と統合すると、アプリケーションのセキュリティとプライバシーが向上しますが、既にある大量のアプリを管理し続けながら、押し寄せる新しいアプリケーションの数々に対処していくことは、ID 管理者にとって莫大な仕事になります。管理者を支援する必要があります。</p>
+<p>それを解決するためには、ID 管理者はアプリケーション開発チームにさらに多くを委任することが必要です。このため、マイクロソフトでは、開発者が <a href="https://developer.microsoft.com/en-us/identity" target="_blank" rel="noopener">Microsoft Identity Platform</a> を利用して認証をアプリケーションに統合し、<a href="https://developer.microsoft.com/en-us/graph" target="_blank" rel="noopener">Microsoft Graph</a> を使用してデータ駆動型アプリケーションの構築や自動化を簡単に構築できるように支援します。さらに追加の利点として、開発者は各アプリケーションに最低限必要な権限についてきめ細かな設定ができるため、処理を完了するために必要な Microsoft Graph データにのみアクセスさせることが可能です。</p>
+<h3 id="3-セキュリティでユーザーに負担をかけないためにパスワードレスに移行する。"><a href="#3-セキュリティでユーザーに負担をかけないためにパスワードレスに移行する。" class="headerlink" title="3. セキュリティでユーザーに負担をかけないためにパスワードレスに移行する。"></a>3. セキュリティでユーザーに負担をかけないためにパスワードレスに移行する。</h3><p>パスワードは <a href="https://techcommunity.microsoft.com/t5/azure-active-directory-identity/your-pa-word-doesn-t-matter/ba-p/731984" target="_blank" rel="noopener">安全ではなく</a>、管理コストが高く、ユーザーを悩ませることは誰もが知っています。そのため、過去 2 年間、FIDO アライアンスと提携し、私たちの従業員から率先してパスワードの排除を目標としてきました。パスワードのない世界に備える時が今まさに来ています。</p>
+<p><a href="https://www.microsoft.com/en-us/security/technology/identity-access-management/passwordless" target="_blank" rel="noopener">パスワードレス認証</a> には非常に多くの利点があります。 その 1 つは、Microsoft 自身の経験でわかったように、ハード コストとソフト コストが 87% 削減されるという点です。すべての組織がパスワードレスに移行できるように、Windows Hello から Microsoft Authenticator および FIDO2 セキュリティ キーなど、クラウドおよびハイブリッド環境で機能する様々な方法を提供しています。また、導入しやすくするために、お客様と自社 IT チーム状況に応じて展開の計画を開始する <a href="https://www.microsoft.com/security/blog/2019/12/11/go-passwordless-strengthen-security-reduce-costs/" target="_blank" rel="noopener">4 つのステップ</a> を用意しています。</p>
+<h3 id="4-すべてのユーザーに対して境界のないコラボレーションと自動化されたアクセス-ライフサイクルを実現する。"><a href="#4-すべてのユーザーに対して境界のないコラボレーションと自動化されたアクセス-ライフサイクルを実現する。" class="headerlink" title="4. すべてのユーザーに対して境界のないコラボレーションと自動化されたアクセス ライフサイクルを実現する。"></a>4. すべてのユーザーに対して境界のないコラボレーションと自動化されたアクセス ライフサイクルを実現する。</h3><p>組織の境界の内外でのデジタル コラボレーションが爆発的に増えています。今日のアイデンティティは、例えば、<a href="https://azure.microsoft.com/en-us/resources/azure-ad-customer-and-partner-identity-management" target="_blank" rel="noopener">顧客やパートナー</a> 、または以前はデジタル変革の恩恵を得ていなかった <a href="https://techcommunity.microsoft.com/t5/azure-active-directory-identity/empower-firstline-workers-from-day-one-with-enhanced-identity/ba-p/1097771" target="_blank" rel="noopener">20 億人を超えるファーストライン ワーカー (現場の最前線で働く従業員)</a> とのすべてのデジタルなやり取りに対応しています。将来的には、人とソフトウェア ボット、マイクロサービス、スマート デバイス間のコラボレーションも強化されるでしょう。</p>
+<!-- textlint-disable -->
+<p>効果的なコラボレーションには、単にすべてのユーザーをつなぐだけでは不十分です。適切なユーザーが適切なリソースに適切なタイミングで適切なアクセスができるようにする必要があります。ユーザーとアプリケーションの数が増加しているため、IT 部門が全員のアクセスのニーズを把握することはできません。アイデンティティ ガバナンスがここで役立ちます。クラウド ベースの <a href="https://aka.ms/identitygovernance" target="_blank" rel="noopener">ID ガバナンス</a> は、<a href="https://techcommunity.microsoft.com/t5/azure-active-directory-identity/ring-in-the-new-year-with-automated-user-provisioning-from-sap/ba-p/1063603" target="_blank" rel="noopener">SAP Success Factors</a> や <a href="https://techcommunity.microsoft.com/t5/azure-active-directory-identity/say-good-bye-to-custom-scripts-and-simplify-your-workforce/ba-p/320540" target="_blank" rel="noopener">Workday</a> などの人事システムとの統合により、アクセス ライフサイクルを自動化し、機械学習と分析の力によりレビュー担当者のアクセス許可/拒否の判断をシンプルにします。また、ビジネス ユーザーがアクセス要求とワークフローを通じてアクセスを管理したり、ファーストライン マネージャー (現場にいるマネージャー) にユーザー管理を委任したりすることもできます。</p>
+<!-- textlint-enable -->
+
+<h3 id="5-ゼロ-トラストへの移行を開始し、デジタル-トランスフォーメーションを進める組織を攻撃から守る。"><a href="#5-ゼロ-トラストへの移行を開始し、デジタル-トランスフォーメーションを進める組織を攻撃から守る。" class="headerlink" title="5. ゼロ トラストへの移行を開始し、デジタル トランスフォーメーションを進める組織を攻撃から守る。"></a>5. ゼロ トラストへの移行を開始し、デジタル トランスフォーメーションを進める組織を攻撃から守る。</h3><p>我々が会話する顧客は、”ネットワークの境界はなくコラボレーションにも境界はない、またデバイスとアプリケーションが爆発的に増加し、従来のセキュリティ パラダイムはもはや適用できない” ということを明確に理解しています。このような世界では、ゼロ トラストという考えが世界の原則であり、セキュリティ戦略でもあります。ゼロ トラストの世界では、企業ファイアウォールの背後にあるすべてのものが安全であるという前提はなく、代わりに 3 つの原則である、明示的な検証、最小特権でのアクセス、侵害は必ず発生するという考えを前提とします。</p>
+<p>マイクロソフトが <a href="https://www.microsoft.com/security/blog/2019/10/29/improve-security-zero-trust-access-model/" target="_blank" rel="noopener">自身の経験</a> から学んだように、ビジネスの優先順位や所有するテクノロジー、保護する資産に応じて、すべてのゼロ トラストへの移行のステップはお客様ごとに異なるものになります。既存の運用や資産に基づいて構築する場合、<a href="https://download.microsoft.com/download/f/9/2/f92129bc-0d6e-4b8e-a47b-288432bae68e/Zero_Trust_Vision_Paper_Final%2010.28.pdf" target="_blank" rel="noopener">ゼロ トラストの成熟度</a> を評価することで、さらに強力なセキュリティ体制に向けて実用的な手段を講じることができます。</p>
+<img src="/blog/azure-active-directory/5-identity-priorities-for-2020/figure2.png">
+
+<h2 id="2020-年以降のアイデンティティの展望"><a href="#2020-年以降のアイデンティティの展望" class="headerlink" title="2020 年以降のアイデンティティの展望"></a>2020 年以降のアイデンティティの展望</h2><p>2020 年以降も、多くのエキサイティングなテクノロジーが、アイデンティティの世界を変えようとしています。特に注目すべき点は、非中央集権型 (decentralized) アイデンティティです。</p>
+<h3 id="非中央集権型のアイデンティティと検証可能なクレームにより検証性とプライバシーが向上する。"><a href="#非中央集権型のアイデンティティと検証可能なクレームにより検証性とプライバシーが向上する。" class="headerlink" title="非中央集権型のアイデンティティと検証可能なクレームにより検証性とプライバシーが向上する。"></a>非中央集権型のアイデンティティと検証可能なクレームにより検証性とプライバシーが向上する。</h3><p>より多くのトランザクションと情報交換がデジタルで行われるようになると、その人が誰なのか、提示する情報が正確であるかを確認することが不可欠となります。これは、収集したデータの正しさを確認し、なおかつそのデータの秘匿性と安全性を確保しなければいけない組織にとって、非常に大きな負担となります。また、人々は自らのアイデンティティを管理し、個人情報を収集するそのような組織に多大な信頼を置く必要もあります。</p>
+<p>非中央集権型のアイデンティティは、我々のデジタルとのかかわり方を変えることで、すべてのオンライン上の属性情報を簡単に検証できるようにし、なおかつユーザー自らが自身のデータを管理できるようにします。これは単なるコンセプトではなく、実際に実現可能な仕組みです。<a href="https://identity.foundation/" target="_blank" rel="noopener">Decentralized Identity Foundation (DIF)</a> とのコミュニティの取り組みを通じて、私たちは、検証可能な資格情報に関する <a href="https://www.w3.org/TR/vc-data-model/" target="_blank" rel="noopener">新しい W3C Web 標準</a> 化を進めています。また、UK National Health Service、Blackpool Teaching Hospitals および Truu との協力関係により、<a href="https://myignite.techcommunity.microsoft.com/sessions/81763?source=sessions" target="_blank" rel="noopener">非中央集権型アイデンティティの試験運用</a> も行っています。 この試験運用で、医師が自らの資格情報を検証するのにかかる時間を 5 か月から 5 分に短縮することができ、医師がより長い時間、患者に時間をさけるよう支援しています。</p>
+<h2 id="今後-10-年間の我々のコミットメント"><a href="#今後-10-年間の我々のコミットメント" class="headerlink" title="今後 10 年間の我々のコミットメント"></a>今後 10 年間の我々のコミットメント</h2><p>これからの 10 年間では、過去 10 年間と同様、お客様が共有くださるビジネス上の優先事項をもとに、アイデンティティに対する技術投資を進めていきます。私たちのチームの最優先事項は、サービスの信頼性とセキュリティです。我々が核とする技術革新の原則はこれまでもこれからも変わりません:</p>
+<ul>
+<li>業界をリードするセキュリティを最初から提供する。</li>
+<li>シンプルで統合された完全な ID ソリューションを構築する</li>
+<li>オープンで相互運用可能なエコシステムをサポートする</li>
+</ul>
+<p>2020 年のそれぞれのアイデンティティの優先事項を各組織の目標に用意に当てはめ実装するにはそれぞれ個別の対応が必要ですが、アイデンティティは、ビジネス変革の過程において重要な部分になります。私たちのチームは、お客様と密接に協力して製品の革新を図り、お客様に最適なアイデンティティ アーキテクチャの設計を支援し、それをお客様の組織に迅速に展開することに取り組んでいます。お客様の <a href="https://feedback.azure.com/forums/169401-azure-active-directory" target="_blank" rel="noopener">フィードバック</a> をもとに、私たちは製品やサービスの開発を進めていきます。我々の既存製品を超えた更にその先にお客様が進めるよう、ぜひ必要なものをお知らせください。</p>
+<h3 id="著者について"><a href="#著者について" class="headerlink" title="著者について"></a>著者について</h3><p>Joy Chik は、マイクロソフトのアイデンティティ部門のコーポレート バイス プレジデントです。Joy は、数十億ドル規模のアイデンティティ ビジネスの技術部門を率いており、当該部門では数十億の人々が日々利用するコンシューマーおよびエンタープライズのテクノロジーに対し、より優れたセキュリティとモビリティを提供しています。</p>
+<p>Joy のチームは、Active Directory、Azure Active Directory を含む Microsoft のすべての ID テクノロジーとサービスの構築を担当しています。これらのサービスは、あらゆる規模の組織と、世界中でほぼ 10 億人の消費者が利用する Microsoft アカウント (MSA) を保護し、エンドツーエンドの ID およびアクセス管理ソリューションを提供しています。Joy は、Anita Borg Institute の評議員および Sierra Wireless の取締役を務めています。彼女は、女性がテクノロジー キャリアを追求することを奨励する慈善団体でも積極的に活動しています。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../tags/Azure-AD/">Azure AD</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../tags/Security/">Security</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../tags/Zero-Trust/">Zero Trust</a></li></ul>
+
+        
+        <a href="https://github.com/jpazureid/blog/edit/master/articles/azure-active-directory/5-identity-priorities-for-2020.md" class="article-github-edit-link" target="_blank" rel="noopener noreferrer">GitHub で編集</a>
+        
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="../../active-directory-federation-service/adfs-AADSTS50107/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">次の記事</strong>
+      <div class="article-nav-title">
+        
+          AADSTS50107 The requested federation realm object &#39;xxx&#39; does not exist. (Issuer ID/Issuer URI と SupportMultipleDomain)
+        
+      </div>
+    </a>
+  
+  
+    <a href="../microsoft-graph-api-signin-activity-reports-v2/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前の記事</strong>
+      <div class="article-nav-title">マネージド ID を利用して Azure AD サインイン アクティビティ レポートを CSV ファイルで取得する PowerShell スクリプト</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最近の投稿</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../3-ways-aad-ca-balances-security-and-productivity/">Azure AD 条件付きアクセスを利用してセキュリティと生産性のバランスをとる 3 つの方法</a>
+          </li>
+        
+          <li>
+            <a href="../../active-directory-federation-service/adfs-AADSTS50107/">AADSTS50107 The requested federation realm object &#39;xxx&#39; does not exist. (Issuer ID/Issuer URI と SupportMultipleDomain)</a>
+          </li>
+        
+          <li>
+            <a href>2020 年アイデンティティについて取り組むべき 5 つのポイント</a>
+          </li>
+        
+          <li>
+            <a href="../microsoft-graph-api-signin-activity-reports-v2/">マネージド ID を利用して Azure AD サインイン アクティビティ レポートを CSV ファイルで取得する PowerShell スクリプト</a>
+          </li>
+        
+          <li>
+            <a href="../troubleshoot-hybrid-azure-ad-join-managed/">Hybrid Azure AD Join 失敗時の初動調査方法について (マネージド編)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">タグ</h3>
+    <div class="widget">
+      <!-- <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AAD-Connect/">AAD Connect</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AADSTS50107/">AADSTS50107</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AD-FS/">AD FS</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AD-Sync/">AD Sync</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/ADSync/">ADSync</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Application/">Application</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD/">Azure AD</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-Application-Proxy/">Azure AD Application Proxy</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-B2B/">Azure AD B2B</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-Connect/">Azure AD Connect</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-Directory-Rolls/">Azure AD Directory Rolls</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-License/">Azure AD License</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-Active-Directory/">Azure Active Directory</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/CBA/">CBA</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Conditional-Access/">Conditional Access</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Device/">Device</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/DirSync/">DirSync</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/ExpressRoute/">ExpressRoute</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Federated-Domain/">Federated Domain</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Hard-match/">Hard match</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Hybrid-Azure-AD-Join/">Hybrid Azure AD Join</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Intune/">Intune</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Issuer-ID/">Issuer ID</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Issuer-URI/">Issuer URI</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/MFA/">MFA</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Managed-Domain/">Managed Domain</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Managed-ID/">Managed ID</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/OAuth/">OAuth</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/PRT/">PRT</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/PowerShell/">PowerShell</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Primary-Refresh-Token/">Primary Refresh Token</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/RBAC/">RBAC</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/SSO/">SSO</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/SSPR/">SSPR</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Security/">Security</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Sgin-in-log/">Sgin-in log</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Smart-lockout/">Smart lockout</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Subscription/">Subscription</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Tenant-Restrictions/">Tenant Restrictions</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Token/">Token</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Troubleshooting/">Troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/UPN/">UPN</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Windows-Defender-ATP/">Windows Defender ATP</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Workplace-Join/">Workplace Join</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Zero-Trust/">Zero Trust</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/graph-api/">graph api</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/signin-log/">signin log</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/supportMultipleDomain/">supportMultipleDomain</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/クレームルール/">クレームルール</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/サポート/">サポート</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/トラブルシューティング/">トラブルシューティング</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/情報採取/">情報採取</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/証明書/">証明書</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/証明書認証/">証明書認証</a></li></ul> -->
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AD-FS/">AD FS</a><span class="tag-list-count">16</span><ul><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/AADSTS50107">AADSTS50107</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Azure-AD">Azure AD</a><span class="tag-list-count">4</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Azure-AD-Connect">Azure AD Connect</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/CBA">CBA</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Conditional-Access">Conditional Access</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Federated-Domain">Federated Domain</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Hybrid-Azure-AD-Join">Hybrid Azure AD Join</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Intune">Intune</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Issuer-ID">Issuer ID</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Issuer-URI">Issuer URI</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/MFA">MFA</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Security">Security</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Smart-lockout">Smart lockout</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Workplace-Join">Workplace Join</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/supportMultipleDomain">supportMultipleDomain</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/クレームルール">クレームルール</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/トラブルシューティング">トラブルシューティング</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/証明書">証明書</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/証明書認証">証明書認証</a><span class="tag-list-count">1</span></li></ul></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AAD-Connect/">AAD Connect</a><span class="tag-list-count">22</span><ul><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/AD-Sync">AD Sync</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/ADSync">ADSync</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/Azure-AD">Azure AD</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/Azure-Active-Directory">Azure Active Directory</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/DirSync">DirSync</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/Hard-match">Hard match</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/SSO">SSO</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/UPN">UPN</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/サポート">サポート</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/情報採取">情報採取</a><span class="tag-list-count">2</span></li></ul></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/情報採取/">情報採取</a><span class="tag-list-count">2</span><ul><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/情報採取/AAD-Connect">AAD Connect</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/情報採取/サポート">サポート</a><span class="tag-list-count">2</span></li></ul></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD/">Azure AD</a><span class="tag-list-count">55</span><ul><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/AAD-Connect">AAD Connect</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/AD-FS">AD FS</a><span class="tag-list-count">4</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Application">Application</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Azure-AD-Application-Proxy">Azure AD Application Proxy</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Azure-AD-B2B">Azure AD B2B</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Azure-AD-Connect">Azure AD Connect</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Conditional-Access">Conditional Access</a><span class="tag-list-count">8</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Device">Device</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/ExpressRoute">ExpressRoute</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Federated-Domain">Federated Domain</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Hybrid-Azure-AD-Join">Hybrid Azure AD Join</a><span class="tag-list-count">5</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Intune">Intune</a><span class="tag-list-count">3</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/MFA">MFA</a><span class="tag-list-count">3</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Managed-Domain">Managed Domain</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Managed-ID">Managed ID</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/OAuth">OAuth</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/PRT">PRT</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/PowerShell">PowerShell</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Primary-Refresh-Token">Primary Refresh Token</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/RBAC">RBAC</a><span class="tag-list-count">2</span></li></ul></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">アーカイブ</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2020/03/">2020 / 03</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2020/02/">2020 / 02</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2020/01/">2020 / 01</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/12/">2019 / 12</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/11/">2019 / 11</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/10/">2019 / 10</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/09/">2019 / 09</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/07/">2019 / 07</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/05/">2019 / 05</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/02/">2019 / 02</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/12/">2018 / 12</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/11/">2018 / 11</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/10/">2018 / 10</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/09/">2018 / 09</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/08/">2018 / 08</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/07/">2018 / 07</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/06/">2018 / 06</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/05/">2018 / 05</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/04/">2018 / 04</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/03/">2018 / 03</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/02/">2018 / 02</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/01/">2018 / 01</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2017/12/">2017 / 12</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2017/11/">2017 / 11</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2017/10/">2017 / 10</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2017/06/">2017 / 06</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">タグクラウド</h3>
+    <div class="widget tagcloud">
+      <a href="../../tags/AAD-Connect/" style="font-size: 18.89px;">AAD Connect</a> <a href="../../tags/AADSTS50107/" style="font-size: 10px;">AADSTS50107</a> <a href="../../tags/AD-FS/" style="font-size: 17.78px;">AD FS</a> <a href="../../tags/AD-Sync/" style="font-size: 10px;">AD Sync</a> <a href="../../tags/ADSync/" style="font-size: 10px;">ADSync</a> <a href="../../tags/Application/" style="font-size: 10px;">Application</a> <a href="../../tags/Azure-AD/" style="font-size: 20px;">Azure AD</a> <a href="../../tags/Azure-AD-Application-Proxy/" style="font-size: 10px;">Azure AD Application Proxy</a> <a href="../../tags/Azure-AD-B2B/" style="font-size: 13.33px;">Azure AD B2B</a> <a href="../../tags/Azure-AD-Connect/" style="font-size: 11.11px;">Azure AD Connect</a> <a href="../../tags/Azure-AD-Directory-Rolls/" style="font-size: 10px;">Azure AD Directory Rolls</a> <a href="../../tags/Azure-AD-License/" style="font-size: 10px;">Azure AD License</a> <a href="../../tags/Azure-Active-Directory/" style="font-size: 10px;">Azure Active Directory</a> <a href="../../tags/CBA/" style="font-size: 10px;">CBA</a> <a href="../../tags/Conditional-Access/" style="font-size: 16.67px;">Conditional Access</a> <a href="../../tags/Device/" style="font-size: 10px;">Device</a> <a href="../../tags/DirSync/" style="font-size: 10px;">DirSync</a> <a href="../../tags/ExpressRoute/" style="font-size: 10px;">ExpressRoute</a> <a href="../../tags/Federated-Domain/" style="font-size: 10px;">Federated Domain</a> <a href="../../tags/Hard-match/" style="font-size: 10px;">Hard match</a> <a href="../../tags/Hybrid-Azure-AD-Join/" style="font-size: 14.44px;">Hybrid Azure AD Join</a> <a href="../../tags/Intune/" style="font-size: 12.22px;">Intune</a> <a href="../../tags/Issuer-ID/" style="font-size: 10px;">Issuer ID</a> <a href="../../tags/Issuer-URI/" style="font-size: 10px;">Issuer URI</a> <a href="../../tags/MFA/" style="font-size: 12.22px;">MFA</a> <a href="../../tags/Managed-Domain/" style="font-size: 10px;">Managed Domain</a> <a href="../../tags/Managed-ID/" style="font-size: 10px;">Managed ID</a> <a href="../../tags/OAuth/" style="font-size: 10px;">OAuth</a> <a href="../../tags/PRT/" style="font-size: 10px;">PRT</a> <a href="../../tags/PowerShell/" style="font-size: 11.11px;">PowerShell</a> <a href="../../tags/Primary-Refresh-Token/" style="font-size: 10px;">Primary Refresh Token</a> <a href="../../tags/RBAC/" style="font-size: 11.11px;">RBAC</a> <a href="../../tags/SSO/" style="font-size: 10px;">SSO</a> <a href="../../tags/SSPR/" style="font-size: 10px;">SSPR</a> <a href="../../tags/Security/" style="font-size: 15.56px;">Security</a> <a href="../../tags/Sgin-in-log/" style="font-size: 10px;">Sgin-in log</a> <a href="../../tags/Smart-lockout/" style="font-size: 10px;">Smart lockout</a> <a href="../../tags/Subscription/" style="font-size: 10px;">Subscription</a> <a href="../../tags/Tenant-Restrictions/" style="font-size: 10px;">Tenant Restrictions</a> <a href="../../tags/Token/" style="font-size: 10px;">Token</a> <a href="../../tags/Troubleshooting/" style="font-size: 10px;">Troubleshooting</a> <a href="../../tags/UPN/" style="font-size: 10px;">UPN</a> <a href="../../tags/Windows-Defender-ATP/" style="font-size: 10px;">Windows Defender ATP</a> <a href="../../tags/Workplace-Join/" style="font-size: 11.11px;">Workplace Join</a> <a href="../../tags/Zero-Trust/" style="font-size: 11.11px;">Zero Trust</a> <a href="../../tags/graph-api/" style="font-size: 12.22px;">graph api</a> <a href="../../tags/signin-log/" style="font-size: 12.22px;">signin log</a> <a href="../../tags/supportMultipleDomain/" style="font-size: 10px;">supportMultipleDomain</a> <a href="../../tags/クレームルール/" style="font-size: 10px;">クレームルール</a> <a href="../../tags/サポート/" style="font-size: 11.11px;">サポート</a> <a href="../../tags/トラブルシューティング/" style="font-size: 13.33px;">トラブルシューティング</a> <a href="../../tags/情報採取/" style="font-size: 11.11px;">情報採取</a> <a href="../../tags/証明書/" style="font-size: 10px;">証明書</a> <a href="../../tags/証明書認証/" style="font-size: 10px;">証明書認証</a>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 Azure Identity Support Japan<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="../../index.html" class="mobile-nav-link">Home</a>
+  
+    <a href="../../archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="../../fancybox/jquery.fancybox.css">
+  <script src="../../fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="../../js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

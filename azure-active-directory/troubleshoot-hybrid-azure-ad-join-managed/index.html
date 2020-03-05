@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  
+  <title>Hybrid Azure AD Join 失敗時の初動調査方法について (マネージド編) | Japan Azure Identity Support Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="こんにちは、Azure &amp;amp; Identity サポート チームの 姚 (ヨウ) です。 多くの方にご利用いただいている Hybrid Azure AD Join (以後 HAADJ) の構成ですが、構成に失敗する場合、 Azure AD の観点だけでなく、オンプレミス Active Directory と Windows の観点での確認が必要です。今回は、HAADJ の構成時の初動調査につ">
+<meta name="keywords" content="Azure AD,Hybrid Azure AD Join,Troubleshooting">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hybrid Azure AD Join 失敗時の初動調査方法について (マネージド編)">
+<meta property="og:url" content="https://jpazureid.github.io/blog/azure-active-directory/troubleshoot-hybrid-azure-ad-join-managed/index.html">
+<meta property="og:site_name" content="Japan Azure Identity Support Blog">
+<meta property="og:description" content="こんにちは、Azure &amp;amp; Identity サポート チームの 姚 (ヨウ) です。 多くの方にご利用いただいている Hybrid Azure AD Join (以後 HAADJ) の構成ですが、構成に失敗する場合、 Azure AD の観点だけでなく、オンプレミス Active Directory と Windows の観点での確認が必要です。今回は、HAADJ の構成時の初動調査につ">
+<meta property="og:locale" content="ja">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory/troubleshoot-hybrid-azure-ad-join-managed/device-list-azure-portal.png">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory/troubleshoot-hybrid-azure-ad-join-managed/userCertificate01.png">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory/troubleshoot-hybrid-azure-ad-join-managed/userCertificate02.png">
+<meta property="og:image" content="https://jpazureid.github.io/blog/azure-active-directory/troubleshoot-hybrid-azure-ad-join-managed/device-list-azure-portal02.png">
+<meta property="og:updated_time" content="2020-03-05T03:14:38.429Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hybrid Azure AD Join 失敗時の初動調査方法について (マネージド編)">
+<meta name="twitter:description" content="こんにちは、Azure &amp;amp; Identity サポート チームの 姚 (ヨウ) です。 多くの方にご利用いただいている Hybrid Azure AD Join (以後 HAADJ) の構成ですが、構成に失敗する場合、 Azure AD の観点だけでなく、オンプレミス Active Directory と Windows の観点での確認が必要です。今回は、HAADJ の構成時の初動調査につ">
+<meta name="twitter:image" content="https://jpazureid.github.io/blog/azure-active-directory/troubleshoot-hybrid-azure-ad-join-managed/device-list-azure-portal.png">
+  
+    <link rel="alternate" href="../../blog/atom.xml" title="Japan Azure Identity Support Blog" type="application/atom+xml">
+  
+
+  <link rel="icon" href="./favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
+  <link rel="manifest" href="./site.webmanifest">
+  <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="theme-color" content="#ffffff">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="site-header-logo"></div>
+  <div id="site-header-blog-wrapper"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="../../index.html">Home</a>
+        
+          <a class="main-nav-link" href="../../archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="../../blog/atom.xml" title="RSSフィード"></a>
+        
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//www.bing.com/search" method="get" accept-charset="UTF-8" name="bing-search" onsubmit="var f=this;if(f['q'].value){var searchUrl =  'https://www.bing.com/search?q=' +  encodeURIComponent(f['q'].value + ' site:' + f['sitesearch'].value) ;window.open(searchUrl, 'blank') };return false;" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="検索"><button type="submit" id="nav-search-btn" class="search-form-submit"></button><input type="hidden" name="sitesearch" value="https://jpazureid.github.io/blog"></form>
+      </div>
+    </div>
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="../../index.html" id="logo">Japan Azure Identity Support Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="../../index.html" id="subtitle">日本マイクロソフトの Azure Active Directory と AD FS に関するサポート情報のブログです。</a>
+        </h2>
+      
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-azure-active-directory/troubleshoot-hybrid-azure-ad-join-managed" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+    
+      <header class="article-header-single">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Hybrid Azure AD Join 失敗時の初動調査方法について (マネージド編)
+    </h1>
+  
+
+      </header>
+      <div class="article-share">
+        Last Update: 
+        <a href class="article-date-single">
+  <time datetime="2020-01-19T15:00:00.000Z" itemprop="datePublished">2020-01-20</time>
+</a>
+        
+        
+        <a href="https://github.com/jpazureid/blog/issues/new?title=&body=%0A%0A---%0A%0A%23%23%23%23+Document+Details%0A%0A%E2%9A%A0+*Do+not+edit+this+section.%0A%0A*+ID%3A+5f347a34-b754-5d6f-bb3a-63be7bcfd0e5%0A*+%E5%AF%BE%E8%B1%A1%E8%A8%98%E4%BA%8B%3A+%5BHybrid+Azure+AD+Join+%E5%A4%B1%E6%95%97%E6%99%82%E3%81%AE%E5%88%9D%E5%8B%95%E8%AA%BF%E6%9F%BB%E6%96%B9%E6%B3%95%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6+%28%E3%83%9E%E3%83%8D%E3%83%BC%E3%82%B8%E3%83%89%E7%B7%A8%29%5D%28https%3A%2F%2Fjpazureid.github.io%2Fblog%2Fazure-active-directory%2Ftroubleshoot-hybrid-azure-ad-join-managed%2F%29%0A*+Content+Source%3A+%5Barticles%2Fazure-active-directory%2Ftroubleshoot-hybrid-azure-ad-join-managed.md%5D%28https%3A%2F%2Fgithub.com%2Fjpazureid%2Fblog%2Fblob%2Fmaster%2Farticles%2Fazure-active-directory%2Ftroubleshoot-hybrid-azure-ad-join-managed.md%29%0A*+Author%3A+" class="article-github-issue-link" target="_blank" rel="noopener noreferrer">feedback</a>
+        
+        <a data-url="https://jpazureid.github.io/blog/azure-active-directory/troubleshoot-hybrid-azure-ad-join-managed/" data-id="ck7e6fl9f008n4ep637y0qjc5" class="article-share-link">共有</a>
+      </div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>こんにちは、Azure &amp; Identity サポート チームの 姚 (ヨウ) です。</p>
+<p>多くの方にご利用いただいている Hybrid Azure AD Join (以後 HAADJ) の構成ですが、構成に失敗する場合、 Azure AD の観点だけでなく、オンプレミス Active Directory と Windows の観点での確認が必要です。<br>今回は、HAADJ の構成時の初動調査について紹介します。</p>
+<p>今回の情報により問題が解決すれば越したことはありませんが、問題が解決しない場合も、ここで確認した初期切り分け情報を含めることで、サポートにスムーズな形で調査を依頼することができます。</p>
+<p>なお、 HAADJ には、マネージド構成とフェデレーション構成の 2 種類の構成があります。<br>HAADJ とマネージド構成とフェデレーション構成については、それぞれ以下の弊社公開情報をご参照ください。</p>
+<p>Select your scenario based on your identity infrastructure<br><a href="https://docs.microsoft.com/en-us/azure/active-directory/devices/hybrid-azuread-join-plan#select-your-scenario-based-on-your-identity-infrastructure" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/active-directory/devices/hybrid-azuread-join-plan#select-your-scenario-based-on-your-identity-infrastructure</a></p>
+<p>今回は、まずマネージド構成、 Azure AD Conenct のみを利用する HAADJ 構成の初動調査について、構成に失敗する際の代表的な症状 3 つに対する初動調査を紹介します。<br>フェデレーション構成については第二弾として近いうちに公開したいと思います。</p>
+<h2 id="1-オンプレミスのコンピューターが-Azure-AD-のデバイス一覧に存在しない"><a href="#1-オンプレミスのコンピューターが-Azure-AD-のデバイス一覧に存在しない" class="headerlink" title="(1) オンプレミスのコンピューターが Azure AD のデバイス一覧に存在しない"></a>(1) オンプレミスのコンピューターが Azure AD のデバイス一覧に存在しない</h2><p>HAADJ を構成することでオンプレミスのドメインに所属するコンピューターを示すデバイス オブジェクトが Azure AD Connect により Azure AD に同期されます。<br>HAADJ が正常にできているかの最初の確認としては、 Azure ポータルを開き [Azure Active Directory] ブレードの [デバイス] 欄で結合の種類が Hybrid Azure AD Joined となっている状態で対象のコンピューターが存在するか確認します。</p>
+<img src="/blog/azure-active-directory/troubleshoot-hybrid-azure-ad-join-managed/device-list-azure-portal.png">
+
+<p>対象のデバイスが [Azure Active Directory] ブレードの [デバイス] 欄に存在しない場合、デバイスが Azure AD Conndevice-list-azure-portal.pngect によって同期されていない可能性が高く、真っ先に確認いただきたいのはオンプレミス Active Directory にある<br>当該コンピューター オブジェクトに userCertificate に何らかの値が書き込まれていないかどうかです。<br>Azure AD Connect はコンピューター オブジェクトの userCertificate 属性に何らかの値が書き込まれている場合に、コンピューター オブジェクトを Azure AD に同期します。</p>
+<p>その確認方法は、任意のドメイン コントローラーで ADSI エディター ([ファイル名を指定して実行] や検索ボックスから adsiedit.msc) を起動し、対象のコンピューター オブジェクトのプロパティを開きます。<br>以下は userCertificate に値が書き込まれていない場合の例で、この場合、一般的に以下の要因によって発生しますので、それぞれ順番に確認を行います。</p>
+<img src="/blog/azure-active-directory/troubleshoot-hybrid-azure-ad-join-managed/userCertificate01.png">
+
+<h3 id="1-1-HAADJ-の処理で、デバイスを-Azure-AD-Join-するタスクが有効になっていない"><a href="#1-1-HAADJ-の処理で、デバイスを-Azure-AD-Join-するタスクが有効になっていない" class="headerlink" title="(1-1) HAADJ の処理で、デバイスを Azure AD Join するタスクが有効になっていない"></a>(1-1) HAADJ の処理で、デバイスを Azure AD Join するタスクが有効になっていない</h3><p>HAADJ の Join 処理はクライアント端末の以下のタスクによって実施されます。このタスクが実行されないと Azure AD Connect による同期対象にクライアント コンピューターがなりません。</p>
+<p>パス : [タスクスケジューラ] – [タスクスケジューラ ライブラリ] – [Microsoft] – [Windows] – [Workplace Join]<br>タスク名 : Automatic-Device-Join</p>
+<p>タスクはオンプレミスの Active Directory に参加するタイミングで有効になりますので、ドメイン参加後にこのタスクが有効かどうかを確認ください。<br>もし、オンプレミス Active Directory に参加したにも関わらず、当該タスクが有効ではない場合、この時点でサポートにお問い合わせをご検討ください。</p>
+<p>当該タスクが有効の場合、次の (1-2) の確認事項に進みます。</p>
+<h3 id="1-2-Service-Connection-Point-SCP-が正常に構成されていない"><a href="#1-2-Service-Connection-Point-SCP-が正常に構成されていない" class="headerlink" title="(1-2) Service Connection Point (SCP) が正常に構成されていない"></a>(1-2) Service Connection Point (SCP) が正常に構成されていない</h3><p>SCP はクライアント端末が HAADJ Join する先の Azure AD テナントの情報が書き込まれています。</p>
+<p>(1-1) のクライアント上で実行されるタスクは SCP を元に Azure AD へのエンドポイントを確認し、コンピューター オブジェクトの userCertificate 属性に必要な情報を書き込みます。<br>SCP が正常に構成されていない場合、userCertificate 属性は書き込まれず、コンピューター オブジェクトが同期されない結果になるため、 SCP が正しく設定されているか確認します。</p>
+<p>SCP は、オンプレミス Active Directory の構成パーティションか、クライアント端末のレジストリ キー値のいずれかで設定ができます。<br>以下の手順で SCP が設定されているかどうかを確認します。</p>
+<p>Active Directory の構成パーティション、またはクライアント端末のレジストリ キー値のいずれか設定されていれば問題はありません。<br>もし、SCP の設定に問題はなければ、次の (1-3) の確認事項に進みます。</p>
+<h4 id="Active-Directory-の構成パーティションの確認"><a href="#Active-Directory-の構成パーティションの確認" class="headerlink" title="Active Directory の構成パーティションの確認"></a>Active Directory の構成パーティションの確認</h4><p>(1) ドメイン コントローラーに管理者ユーザーのログオンし、管理者で PowerShell を起動します。<br>(2)  以下のコマンドを実行します。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$scp</span> = <span class="built_in">New-Object</span> System.DirectoryServices.DirectoryEntry</span><br><span class="line"><span class="variable">$scp</span>.Path = <span class="string">"LDAP://CN=62a0ff2e-97b9-4513-943f-0d221bd30080,CN=Device Registration Configuration,CN=Services,CN=Configuration,DC=xxxxxxx,DC=xxxxxx"</span></span><br><span class="line"><span class="variable">$scp</span>.Keywords</span><br></pre></td></tr></table></figure>
+
+<p>  DC=xxxxxxx,DC=xxxxxx にはオンプレミス Active Directory のドメイン名 (フォレストに複数ドメインが存在する場合には、フォレスト ルート ドメイン名) を入力します。<br>  contoso.com の場合、DC=contoso,DC=com  と入力します。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">例 :</span><br><span class="line"></span><br><span class="line"><span class="variable">$scp</span> = <span class="built_in">New-Object</span> System.DirectoryServices.DirectoryEntry</span><br><span class="line"><span class="variable">$scp</span>.Path = <span class="string">"LDAP://CN=62a0ff2e-97b9-4513-943f-0d221bd30080,CN=Device Registration Configuration,CN=Services,CN=Configuration,DC=contoso,DC=com "</span></span><br><span class="line"><span class="variable">$scp</span>.Keywords</span><br></pre></td></tr></table></figure>
+
+<p>  これらのコマンドの出力結果として、以下のように Azure AD テナントのドメイン名 (azureADName) とテナント ID (azureADId) の情報が表示されていれば、正常に構成されていると判断できます。<br>  また、マネージドの HAADJ であるため、azureADName は xxxxx.onmicrosoft.com 形式で設定されている必要があります。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">azureADName:&lt;Azure AD テナントドメイン名の xxxxx.onmicrosoft.com 形式&gt;</span><br><span class="line">azureADId:&lt;Azure AD テナント ID&gt;</span><br><span class="line"></span><br><span class="line">例 :</span><br><span class="line">azureADName:microsoft.onmicrosoft.com</span><br><span class="line">azureADId:72f988bf-86f1-41af-91ab-2d7cd011db47</span><br></pre></td></tr></table></figure>
+
+<h4 id="クライアント端末のレジストリ-キー値の確認"><a href="#クライアント端末のレジストリ-キー値の確認" class="headerlink" title="クライアント端末のレジストリ キー値の確認"></a>クライアント端末のレジストリ キー値の確認</h4><p>クライアント端末の以下の 2 つのレジストリー値に Azure AD テナントの情報が設定しているかどうかを確認します。</p>
+<ul>
+<li>レジストリー キー : KEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\CDJ\AAD<ul>
+<li>値 : TenantId</li>
+<li>種類 : REG_SZ</li>
+<li>値 : TenantName</li>
+<li>種類 : REG_SZ</li>
+</ul>
+</li>
+</ul>
+<p>TenantName には Azure AD のテナント ドメイン名 (xxxx.onmicrosoft.com 形式) と TenantId には Azure AD テナント ID の両方が設定されている必要があります。<br>SCP として、いずれかの場所に正常に設定されていることが確認できましたら、次の (1-3) にお進みください。</p>
+<h3 id="1-3-HAADJ-に必要な-Azure-AD-のエンドポイントへアクセスできていない"><a href="#1-3-HAADJ-に必要な-Azure-AD-のエンドポイントへアクセスできていない" class="headerlink" title="(1-3) HAADJ に必要な Azure AD のエンドポイントへアクセスできていない"></a>(1-3) HAADJ に必要な Azure AD のエンドポイントへアクセスできていない</h3><p>クライアント上で実行される HAADJ のタスクは userCertificate 属性を書き込む前に SCP に指定されている Azure AD テナントが実際に存在するか確認します。<br>具体的には HAADJ に必要な以下の Azure AD のエンドポイントへのアクセスを試行し、ここにアクセスして指定された Azure AD テナントの存在を確認した上で userCertificate へ情報を書き込みます。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">https://enterpriseregistration.windows.net</span><br><span class="line">https://login.microsoftonline.com</span><br><span class="line">https://device.login.microsoftonline.com</span><br></pre></td></tr></table></figure>
+
+<p>インターネットへの接続にプロキシー サーバーを経由する必要がある環境の場合、クライアント端末の WinHTTP のプロキシー サーバー設定にプロキシー サーバーを設定する必要があります。これは HAADJ のタスクがシステム コンテキストで動作し、 winHTTP の設定を利用するためです。HAADJ のタスクは認証を必要とするプロキシー サーバーには対応していませんので、認証を必要とするようにプロキシ サーバーが構成されている場合、認証を解除する必要があります。</p>
+<p>クライアント端末で管理者権限でコマンド プロンプトを起動し、以下のコマンドを実行し、WinHTTP のプロキシ サーバーが設定されているか確認します。</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netsh winhttp show proxy</span><br></pre></td></tr></table></figure>
+
+<p>プロキシを利用してアクセスすることが必要な環境であるのにも関わらず、設定されていない場合、以下のコマンドを実行し、設定します。</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netsh winhttp <span class="built_in">set</span> proxy proxy-server="&lt;プロキシー サーバー&gt;:&lt;ポート&gt;" bypass-list="&lt;バイパスする URL&gt;"</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>&lt;バイパスする URL&gt; はプロキシ サーバーを介さずにアクセスさせるサーバーの一覧です。必要に応じて指定します。<br>例えばローカルと <em>.test.com へのアクセスにはプロキシを経由させない場合には、 bypass-list=”<local>;</local></em>.test.com” というような記載を行います。</li>
+</ul>
+<p>WinHTTP のプロキシー サーバー設定を実施した場合には、以下のタスクを手動で実行します。</p>
+<p>パス : [タスクスケジューラ] – [タスクスケジューラ ライブラリ] – [Microsoft] – [Windows] – [Workplace Join]<br>タスク名 : Automatic-Device-Join</p>
+<p>再度、ドメイン コントローラーで ADSI エディターを利用し、対象のコンピューター オブジェクトの userCertificate に何らかの値が書き込まれたかどうかを確認ください。<br>以下の例は userCertificate に何らかの値が書き込まれた場合です。</p>
+<img src="/blog/azure-active-directory/troubleshoot-hybrid-azure-ad-join-managed/userCertificate02.png">
+
+<p>以上を確認した結果として、特に問題が無い場合には、これまで確認された情報を合わせ、サポートにお問い合わせすることをご検討ください。</p>
+<h2 id="2-HAADJ-の対象のコンピューター-オブジェクトが、保留中の状態"><a href="#2-HAADJ-の対象のコンピューター-オブジェクトが、保留中の状態" class="headerlink" title="(2) HAADJ の対象のコンピューター オブジェクトが、保留中の状態"></a>(2) HAADJ の対象のコンピューター オブジェクトが、保留中の状態</h2><p>HAADJ の対象のコンピューター オブジェクトが Azure AD に登録されているが、Azure ポータルで以下の図の例のように [登録済み] の欄が “保留中” というステータスになっている場合には HAADJ が完了していない状態を疑います。</p>
+<img src="/blog/azure-active-directory/troubleshoot-hybrid-azure-ad-join-managed/device-list-azure-portal02.png">
+
+<p>Azure AD Connect によりコンピューターオブジェクトが、 Azure AD に同期され、その後、クライアントで再度 Automatic-Device-Join タスクが実行されることにより、デバイスの Azure AD への登録 (Hybrid Azure AD Join の処理) が完了します。<br>コンピューター オブジェクトは同期されたものの、最終的な Join 処理が失敗、あるいはタスクが未実行の場合、Azure ポータルではデバイスは上記のように “保留中” という状態になります。</p>
+<p>コンピューター オブジェクトが Azure AD に同期された後に、ユーザーがログオフ/ログオンを実行していない場合タスクはまだ未実行であるため、処理が完了していないのは想定される動作です。<br>そのため、一度ユーザーのログオフ、ログオンにより状態が変わるかをご確認ください。<br>ログオンすることによって、バックグラウンドで Automatic-Device-Join タスクが実行され、最終的な Join 処理が実施されることが期待できるためです。</p>
+<p>もし、ユーザーによるログオフ/ログオンを実施しても、”保留中” の状態が変わらない場合、以下の Azure AD 側のエンドポイントにアクセスできないことが原因として考えられます。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">https://enterpriseregistration.windows.net</span><br><span class="line">https://login.microsoftonline.com</span><br><span class="line">https://device.login.microsoftonline.com</span><br></pre></td></tr></table></figure>
+
+<p>このため、”(1-3) HAADJ に必要な Azure AD のエンドポイントへアクセスできていない” の項を参照の上、 winHTTP プロキシの設定が行われているか確認ください。</p>
+<p>以上を実施しても、デバイスの状態が “保留中” から変わらない場合、詳細調査が必要ですので、これまで確認された情報と合わせサポートにお問い合わせをすることをご検討ください。</p>
+<h2 id="3-HAADJ-によるシングル-サインオンができない-HAADJ-が動作していない"><a href="#3-HAADJ-によるシングル-サインオンができない-HAADJ-が動作していない" class="headerlink" title="(3) HAADJ によるシングル サインオンができない (HAADJ が動作していない)"></a>(3) HAADJ によるシングル サインオンができない (HAADJ が動作していない)</h2><p>HAADJ ができたコンピューターにログオンすることにより、ログオンしたユーザーはプライマリー リフレッシュ トークン (以後 PRT) を取得できます。PRT は HAADJ に通常利用する同期ユーザーがクライアント端末にログオンする際に Azure AD へのユーザー認証に成功し、認証に成功したことを示すキャッシュ情報です。<br>PRT の詳細については、以下の弊社技術情報をご参照ください。</p>
+<p>プライマリ更新トークンとは<br><a href="https://docs.microsoft.com/ja-jp/azure/active-directory/devices/concept-primary-refresh-token" target="_blank" rel="noopener">https://docs.microsoft.com/ja-jp/azure/active-directory/devices/concept-primary-refresh-token</a></p>
+<p>この PRT を正常に取得できない場合、以下のような事象が発生します。</p>
+<ul>
+<li>Intune の自動登録に失敗する</li>
+<li>条件付きアクセス ポリシーで “ハイブリッド Azure AD 参加済みデバイス” のコントールで拒否される</li>
+<li>Hybrid Azure AD Join の端末からクラウド リソースへ SSO できない</li>
+</ul>
+<p>PRT を正常に取得できているか (HAADJ が正しく完了しているか) は以下の確認事項をもとに判断できます。</p>
+<h3 id="3-1-本ブログにある-1-および-2-の事象が発生していないこと"><a href="#3-1-本ブログにある-1-および-2-の事象が発生していないこと" class="headerlink" title="(3-1)  本ブログにある (1) および (2) の事象が発生していないこと"></a>(3-1)  本ブログにある (1) および (2) の事象が発生していないこと</h3><h3 id="3-2-Azure-AD-にも同期されているオンプレミスの-Active-Directory-のユーザーで端末にログオンします。"><a href="#3-2-Azure-AD-にも同期されているオンプレミスの-Active-Directory-のユーザーで端末にログオンします。" class="headerlink" title="(3-2)  Azure AD にも同期されているオンプレミスの Active Directory のユーザーで端末にログオンします。"></a>(3-2)  Azure AD にも同期されているオンプレミスの Active Directory のユーザーで端末にログオンします。</h3><p>コマンド プロンプトを起動し、dsregcmd /status コマンドを実行します。<br>dsregcmd コマンドにはほかにもたくさんの出力の情報がありますが、まずは以下の項目をご確認ください。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">AzureAdJoined : YES &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; AzureAdJoined は YES になっており、Azure AD に正常に Join していると判断できます</span><br><span class="line">DomainJoined : YES &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; DomainJoined は YES になっており、正常にオンプレミスの Active Directory に参加していると判断できます</span><br><span class="line">AzureAdPrt : NO &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; AzureAdPrt は NO になっている場合、PRT を正常に取得できていないと判断できます</span><br></pre></td></tr></table></figure>
+
+<p>PRT を正常に取得できない場合の一般的な要因はユーザーのログオンタイミングで以下の Azure AD 側のエンドポイントにアクセスできないことが考えられます。<br>まずは、”(1-3) HAADJ に必要な Azure AD のエンドポイントへアクセスできていない” の対応をご参照ください。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">https://enterpriseregistration.windows.net</span><br><span class="line">https://login.microsoftonline.com</span><br><span class="line">https://device.login.microsoftonline.com</span><br></pre></td></tr></table></figure>
+
+<p>この結果、問題無い場合には、詳細調査が必要ですので、以下の事項と合わせましてサポートにお問い合わせをご検討ください。</p>
+<ul>
+<li><p>事象は複数のユーザーで発生しているか、または特定のユーザーにのみ発生しているか</p>
+</li>
+<li><p>事象は特定のクライアント端末で発生しているかどうか<br>正常に PRT を取得できるユーザーがいる場合、PRT を取得できないユーザーがログオンしている端末で取得できるかどうか</p>
+</li>
+<li><p>PRT は HAADJ を構成してから一度も正常に取得できていないかどうか</p>
+</li>
+</ul>
+<p>以上、HAADJ のマネージド構成のトラブシューティングの参考になりましたら幸いです。</p>
+<p>製品動作に関する正式な見解や回答については、お客様環境などを十分に把握したうえでサポート部門より提供させていただきますので、ぜひ弊社サポート サービスをご利用ください。<br>※本情報の内容（添付文書、リンク先などを含む）は、作成日時点でのものであり、予告なく変更される場合があります。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../tags/Azure-AD/">Azure AD</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../tags/Hybrid-Azure-AD-Join/">Hybrid Azure AD Join</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../tags/Troubleshooting/">Troubleshooting</a></li></ul>
+
+        
+        <a href="https://github.com/jpazureid/blog/edit/master/articles/azure-active-directory/troubleshoot-hybrid-azure-ad-join-managed.md" class="article-github-edit-link" target="_blank" rel="noopener noreferrer">GitHub で編集</a>
+        
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="../microsoft-graph-api-signin-activity-reports-v2/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">次の記事</strong>
+      <div class="article-nav-title">
+        
+          マネージド ID を利用して Azure AD サインイン アクティビティ レポートを CSV ファイルで取得する PowerShell スクリプト
+        
+      </div>
+    </a>
+  
+  
+    <a href="../azure-ad-security-defaults/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前の記事</strong>
+      <div class="article-nav-title">[ベースライン ポリシー] から [セキュリティの既定値] への移行</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最近の投稿</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="../3-ways-aad-ca-balances-security-and-productivity/">Azure AD 条件付きアクセスを利用してセキュリティと生産性のバランスをとる 3 つの方法</a>
+          </li>
+        
+          <li>
+            <a href="../../active-directory-federation-service/adfs-AADSTS50107/">AADSTS50107 The requested federation realm object &#39;xxx&#39; does not exist. (Issuer ID/Issuer URI と SupportMultipleDomain)</a>
+          </li>
+        
+          <li>
+            <a href="../5-identity-priorities-for-2020/">2020 年アイデンティティについて取り組むべき 5 つのポイント</a>
+          </li>
+        
+          <li>
+            <a href="../microsoft-graph-api-signin-activity-reports-v2/">マネージド ID を利用して Azure AD サインイン アクティビティ レポートを CSV ファイルで取得する PowerShell スクリプト</a>
+          </li>
+        
+          <li>
+            <a href>Hybrid Azure AD Join 失敗時の初動調査方法について (マネージド編)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">タグ</h3>
+    <div class="widget">
+      <!-- <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AAD-Connect/">AAD Connect</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AADSTS50107/">AADSTS50107</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AD-FS/">AD FS</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AD-Sync/">AD Sync</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/ADSync/">ADSync</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Application/">Application</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD/">Azure AD</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-Application-Proxy/">Azure AD Application Proxy</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-B2B/">Azure AD B2B</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-Connect/">Azure AD Connect</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-Directory-Rolls/">Azure AD Directory Rolls</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD-License/">Azure AD License</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-Active-Directory/">Azure Active Directory</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/CBA/">CBA</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Conditional-Access/">Conditional Access</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Device/">Device</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/DirSync/">DirSync</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/ExpressRoute/">ExpressRoute</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Federated-Domain/">Federated Domain</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Hard-match/">Hard match</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Hybrid-Azure-AD-Join/">Hybrid Azure AD Join</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Intune/">Intune</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Issuer-ID/">Issuer ID</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Issuer-URI/">Issuer URI</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/MFA/">MFA</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Managed-Domain/">Managed Domain</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Managed-ID/">Managed ID</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/OAuth/">OAuth</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/PRT/">PRT</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/PowerShell/">PowerShell</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Primary-Refresh-Token/">Primary Refresh Token</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/RBAC/">RBAC</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/SSO/">SSO</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/SSPR/">SSPR</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Security/">Security</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Sgin-in-log/">Sgin-in log</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Smart-lockout/">Smart lockout</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Subscription/">Subscription</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Tenant-Restrictions/">Tenant Restrictions</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Token/">Token</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Troubleshooting/">Troubleshooting</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/UPN/">UPN</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Windows-Defender-ATP/">Windows Defender ATP</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Workplace-Join/">Workplace Join</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Zero-Trust/">Zero Trust</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/graph-api/">graph api</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/signin-log/">signin log</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/supportMultipleDomain/">supportMultipleDomain</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/クレームルール/">クレームルール</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/サポート/">サポート</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/トラブルシューティング/">トラブルシューティング</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/情報採取/">情報採取</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/証明書/">証明書</a></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/証明書認証/">証明書認証</a></li></ul> -->
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AD-FS/">AD FS</a><span class="tag-list-count">16</span><ul><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/AADSTS50107">AADSTS50107</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Azure-AD">Azure AD</a><span class="tag-list-count">4</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Azure-AD-Connect">Azure AD Connect</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/CBA">CBA</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Conditional-Access">Conditional Access</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Federated-Domain">Federated Domain</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Hybrid-Azure-AD-Join">Hybrid Azure AD Join</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Intune">Intune</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Issuer-ID">Issuer ID</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Issuer-URI">Issuer URI</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/MFA">MFA</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Security">Security</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Smart-lockout">Smart lockout</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/Workplace-Join">Workplace Join</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/supportMultipleDomain">supportMultipleDomain</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/クレームルール">クレームルール</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/トラブルシューティング">トラブルシューティング</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/証明書">証明書</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AD-FS/証明書認証">証明書認証</a><span class="tag-list-count">1</span></li></ul></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/AAD-Connect/">AAD Connect</a><span class="tag-list-count">22</span><ul><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/AD-Sync">AD Sync</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/ADSync">ADSync</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/Azure-AD">Azure AD</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/Azure-Active-Directory">Azure Active Directory</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/DirSync">DirSync</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/Hard-match">Hard match</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/SSO">SSO</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/UPN">UPN</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/サポート">サポート</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/AAD-Connect/情報採取">情報採取</a><span class="tag-list-count">2</span></li></ul></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/情報採取/">情報採取</a><span class="tag-list-count">2</span><ul><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/情報採取/AAD-Connect">AAD Connect</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/情報採取/サポート">サポート</a><span class="tag-list-count">2</span></li></ul></li><li class="tag-list-item"><a class="tag-list-link" href="../../tags/Azure-AD/">Azure AD</a><span class="tag-list-count">55</span><ul><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/AAD-Connect">AAD Connect</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/AD-FS">AD FS</a><span class="tag-list-count">4</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Application">Application</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Azure-AD-Application-Proxy">Azure AD Application Proxy</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Azure-AD-B2B">Azure AD B2B</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Azure-AD-Connect">Azure AD Connect</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Conditional-Access">Conditional Access</a><span class="tag-list-count">8</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Device">Device</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/ExpressRoute">ExpressRoute</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Federated-Domain">Federated Domain</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Hybrid-Azure-AD-Join">Hybrid Azure AD Join</a><span class="tag-list-count">5</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Intune">Intune</a><span class="tag-list-count">3</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/MFA">MFA</a><span class="tag-list-count">3</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Managed-Domain">Managed Domain</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Managed-ID">Managed ID</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/OAuth">OAuth</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/PRT">PRT</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/PowerShell">PowerShell</a><span class="tag-list-count">2</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/Primary-Refresh-Token">Primary Refresh Token</a><span class="tag-list-count">1</span></li><li class="tag-list-item tag-list-item-child-tag"><a class="tag-list-link tag-list-link-child" href="../../tags/Azure-AD/RBAC">RBAC</a><span class="tag-list-count">2</span></li></ul></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">アーカイブ</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2020/03/">2020 / 03</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2020/02/">2020 / 02</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2020/01/">2020 / 01</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/12/">2019 / 12</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/11/">2019 / 11</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/10/">2019 / 10</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/09/">2019 / 09</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/07/">2019 / 07</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/05/">2019 / 05</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2019/02/">2019 / 02</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/12/">2018 / 12</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/11/">2018 / 11</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/10/">2018 / 10</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/09/">2018 / 09</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/08/">2018 / 08</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/07/">2018 / 07</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/06/">2018 / 06</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/05/">2018 / 05</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/04/">2018 / 04</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/03/">2018 / 03</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/02/">2018 / 02</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2018/01/">2018 / 01</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2017/12/">2017 / 12</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2017/11/">2017 / 11</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2017/10/">2017 / 10</a></li><li class="archive-list-item"><a class="archive-list-link" href="../../archives/2017/06/">2017 / 06</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">タグクラウド</h3>
+    <div class="widget tagcloud">
+      <a href="../../tags/AAD-Connect/" style="font-size: 18.89px;">AAD Connect</a> <a href="../../tags/AADSTS50107/" style="font-size: 10px;">AADSTS50107</a> <a href="../../tags/AD-FS/" style="font-size: 17.78px;">AD FS</a> <a href="../../tags/AD-Sync/" style="font-size: 10px;">AD Sync</a> <a href="../../tags/ADSync/" style="font-size: 10px;">ADSync</a> <a href="../../tags/Application/" style="font-size: 10px;">Application</a> <a href="../../tags/Azure-AD/" style="font-size: 20px;">Azure AD</a> <a href="../../tags/Azure-AD-Application-Proxy/" style="font-size: 10px;">Azure AD Application Proxy</a> <a href="../../tags/Azure-AD-B2B/" style="font-size: 13.33px;">Azure AD B2B</a> <a href="../../tags/Azure-AD-Connect/" style="font-size: 11.11px;">Azure AD Connect</a> <a href="../../tags/Azure-AD-Directory-Rolls/" style="font-size: 10px;">Azure AD Directory Rolls</a> <a href="../../tags/Azure-AD-License/" style="font-size: 10px;">Azure AD License</a> <a href="../../tags/Azure-Active-Directory/" style="font-size: 10px;">Azure Active Directory</a> <a href="../../tags/CBA/" style="font-size: 10px;">CBA</a> <a href="../../tags/Conditional-Access/" style="font-size: 16.67px;">Conditional Access</a> <a href="../../tags/Device/" style="font-size: 10px;">Device</a> <a href="../../tags/DirSync/" style="font-size: 10px;">DirSync</a> <a href="../../tags/ExpressRoute/" style="font-size: 10px;">ExpressRoute</a> <a href="../../tags/Federated-Domain/" style="font-size: 10px;">Federated Domain</a> <a href="../../tags/Hard-match/" style="font-size: 10px;">Hard match</a> <a href="../../tags/Hybrid-Azure-AD-Join/" style="font-size: 14.44px;">Hybrid Azure AD Join</a> <a href="../../tags/Intune/" style="font-size: 12.22px;">Intune</a> <a href="../../tags/Issuer-ID/" style="font-size: 10px;">Issuer ID</a> <a href="../../tags/Issuer-URI/" style="font-size: 10px;">Issuer URI</a> <a href="../../tags/MFA/" style="font-size: 12.22px;">MFA</a> <a href="../../tags/Managed-Domain/" style="font-size: 10px;">Managed Domain</a> <a href="../../tags/Managed-ID/" style="font-size: 10px;">Managed ID</a> <a href="../../tags/OAuth/" style="font-size: 10px;">OAuth</a> <a href="../../tags/PRT/" style="font-size: 10px;">PRT</a> <a href="../../tags/PowerShell/" style="font-size: 11.11px;">PowerShell</a> <a href="../../tags/Primary-Refresh-Token/" style="font-size: 10px;">Primary Refresh Token</a> <a href="../../tags/RBAC/" style="font-size: 11.11px;">RBAC</a> <a href="../../tags/SSO/" style="font-size: 10px;">SSO</a> <a href="../../tags/SSPR/" style="font-size: 10px;">SSPR</a> <a href="../../tags/Security/" style="font-size: 15.56px;">Security</a> <a href="../../tags/Sgin-in-log/" style="font-size: 10px;">Sgin-in log</a> <a href="../../tags/Smart-lockout/" style="font-size: 10px;">Smart lockout</a> <a href="../../tags/Subscription/" style="font-size: 10px;">Subscription</a> <a href="../../tags/Tenant-Restrictions/" style="font-size: 10px;">Tenant Restrictions</a> <a href="../../tags/Token/" style="font-size: 10px;">Token</a> <a href="../../tags/Troubleshooting/" style="font-size: 10px;">Troubleshooting</a> <a href="../../tags/UPN/" style="font-size: 10px;">UPN</a> <a href="../../tags/Windows-Defender-ATP/" style="font-size: 10px;">Windows Defender ATP</a> <a href="../../tags/Workplace-Join/" style="font-size: 11.11px;">Workplace Join</a> <a href="../../tags/Zero-Trust/" style="font-size: 11.11px;">Zero Trust</a> <a href="../../tags/graph-api/" style="font-size: 12.22px;">graph api</a> <a href="../../tags/signin-log/" style="font-size: 12.22px;">signin log</a> <a href="../../tags/supportMultipleDomain/" style="font-size: 10px;">supportMultipleDomain</a> <a href="../../tags/クレームルール/" style="font-size: 10px;">クレームルール</a> <a href="../../tags/サポート/" style="font-size: 11.11px;">サポート</a> <a href="../../tags/トラブルシューティング/" style="font-size: 13.33px;">トラブルシューティング</a> <a href="../../tags/情報採取/" style="font-size: 11.11px;">情報採取</a> <a href="../../tags/証明書/" style="font-size: 10px;">証明書</a> <a href="../../tags/証明書認証/" style="font-size: 10px;">証明書認証</a>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 Azure Identity Support Japan<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="../../index.html" class="mobile-nav-link">Home</a>
+  
+    <a href="../../archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="../../fancybox/jquery.fancybox.css">
+  <script src="../../fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="../../js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
